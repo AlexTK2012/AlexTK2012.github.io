@@ -5,7 +5,7 @@ header-img: img/home-bg.jpg
 email: lexkaing@hku.hk
 description: ""
 keyword: ""
-url: "lexkaing.github.io"              # your host, for absolute URL
+url: "https://alextk2012.github.io"              # your host, for absolute URL
 baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 
 
@@ -14,7 +14,7 @@ baseurl: ""         # for example, '/blog' if your blog hosted on 'host/blog'
 RSS: false
 weibo_username:     
 zhihu_username:     
-github_username:   
+github_username:   AlexTK2012
 twitter_username:  
 facebook_username:  
 

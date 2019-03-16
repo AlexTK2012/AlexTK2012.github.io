@@ -2,7 +2,7 @@
     "name": "Alex-blog",
     "title": "Alex Blog",
     "version": "1.0.0",
-    "homepage": "http://lexkaing.github.io",
+    "homepage": "https://alextk2012.github.io",
     "author": "Alex",
     "devDependencies": {
         "grunt": "~0.4.5",
@@ -13,7 +13,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/AlexTK2012/lexkaing.github.io"
+        "url": "https://github.com/AlexTK2012/AlexTK2012.github.io.git"
     },
     "scripts": {
         "preview": "cd _site; python -m SimpleHTTPServer 8020",
