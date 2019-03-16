@@ -1,5 +1,8 @@
-# Alex Bolg
+# Alex Blog
 
-这个模板是从这里https://github.com/Huxpro/huxpro.github.io fork 的。
+### 我来到，我看见，我记录
 
-感谢Hux
+> Ported Theme of [Hux Blog](https://github.com/Huxpro/huxpro.github.io), Thank [Huxpro](https://github.com/Huxpro) for designing such a flawless theme.
+
+![](http://huangxuan.me/img/blog-desktop.jpg)
+
