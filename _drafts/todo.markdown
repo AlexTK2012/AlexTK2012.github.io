@@ -4,7 +4,7 @@ title:      "Welcome to LexKaing"
 subtitle:   " \"Hello World, Hello Blog\""
 date:       2019-03-14 12:00:00
 author:     "Alex"
-header-img: "img/post-bg-2015.jpg"
+header-img: "img/post-bg/post-bg-2015.jpg"
 catalog: true                       # 是否归档
 tags:
     - Draft
