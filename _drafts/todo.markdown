@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Welcome to LexKaing Blog"
+title:      "Welcome to LexKaing"
 subtitle:   " \"Hello World, Hello Blog\""
 date:       2019-03-14 12:00:00
 author:     "Alex"
