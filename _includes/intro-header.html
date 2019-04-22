@@ -40,7 +40,15 @@
                         <a class="tag" href="{{ site.baseurl }}/archive/?tag={{ tag | url_encode }}" title="{{ tag }}">{{ tag }}</a>
                         {% endfor %}
                     </div>
-                    <h1>{{ page.title }}</h1>
+                    <!-- <h1>{{ page.title }}</h1> -->
+                    <svg width="320" height="91" viewBox="0 0 320 91" preserveAspectRatio="xMidYMid meet">
+                        <symbol id="page-title-svg">
+                            <text text-anchor="middle" x="155" y="64" fill-opacity="0"
+                                style="font-size: 82px;">{{ page.title }}</text>
+                        </symbol>
+                        <use xlink:href="#page-title-svg" id="path_1"></use>
+                        <use xlink:href="#page-title-svg" id="path_2"></use>
+                    </svg>
                     {% comment %} always create a h2 for keeping the margin {% endcomment %}
                     <h2 class="subheading">{{ page.subtitle }}</h2>
                     <span class="meta">Posted by {% if page.author %}{{ page.author }}{% else %}{{ site.title }}{% endif %} on {{ page.date | date: "%B %-d, %Y" }}</span>
@@ -100,7 +108,17 @@
         {% else %}
         <div class="site-heading">
         {% endif %}
-          <h1>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</h1>
+          <!-- <h1>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</h1> -->
+          <svg width="320" height="91" viewBox="0 0 320 91" preserveAspectRatio="xMidYMid meet">
+                <symbol id="page-title-svg">
+                    <text text-anchor="middle" x="155" y="64" fill-opacity="0"
+                        style="font-size: 82px;">
+                        {% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}
+                    </text>
+                </symbol>
+                <use xlink:href="#page-title-svg" id="path_1"></use>
+                <use xlink:href="#page-title-svg" id="path_2"></use>
+            </svg>
           <span class="subheading">{{ page.description }}</span>
         </div>
       </div>
