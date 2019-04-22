@@ -32,3 +32,8 @@
         stroke-dashoffset: 14%;
     }
 }
+
+/* 修复表格上边框不显示 #259 实际修改了bootstrap.min.css 对应内容 */
+.table>thead:first-child>tr:first-child>td {
+    border-top: 1px solid #eee;
+}
