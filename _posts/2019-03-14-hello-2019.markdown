@@ -1,5 +1,5 @@
 ---
-layout:     post                            # 使用的布局（不需要改）
+layout:     post                            # 使用的布局（不需要改,js里有根据布局做判断）
 title:      "Welcome to LexKaing"      # 标题
 subtitle:   " \"Hello World, Hello Blog\""  # 副标题
 date:       2019-03-14 12:00:00             # 时间
