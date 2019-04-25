@@ -30,9 +30,12 @@ tags:                                       # 标签，可多个
 
 #### `varchar` or `varchar2`
 
-1. 一般情况下，`varchar2` 把所有字符都占两字节处理，`varchar` 只对汉字和全角等字符占两字节，数字，英文字符等都是一个字节；
-2. `varchar2` 把空串等同于null处理，而varchar仍按照空串处理；
-3. `varchar2` 字符要用几个字节存储，要看数据库使用的字符集，
+> 主要区别在于处理 `empty string` 和 `NULL Value` 的方式不同.
+
+1. `char`的长度是固定的，而`varchar2`的长度是可以变化的。
+2. `varchar` 区分空川和NULL；正如ANSI标准规定的，Oracle保留VARCHAR以支持将来区分NULL和空字符串。
+3. `varchar2` 把空串等同于null处理，
+4. `varchar2` 字符要用几个字节存储，要看数据库使用的字符集，一般情况下，`varchar2` 把所有字符都占两字节处理，`varchar` 只对汉字和全角等字符占两字节，数字，英文字符等都是一个字节；
 
 大部分情况下建议使用 `varchar2` 类型，可以保证更好的兼容性。
 
