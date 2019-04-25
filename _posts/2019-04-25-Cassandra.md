@@ -40,7 +40,7 @@ tags:                                       # 标签，可多个
 > 测试环境可以通过 Docker 直接搭建
 > docker run --name mycassandra -p 3000:9042 -d cassandra:latest
 
-## CQL Shell 常用命令
+## CQL 命令介绍
 
 #### Shell 命令
 
@@ -84,20 +84,95 @@ tags:                                       # 标签，可多个
 - **WHERE** -where子句与select一起使用以读取特定数据。
 - **ORDERBY** -orderby 子句与 select 一起使用，以特定顺序读取特定数据。
 
+## 常用场景
+
+#### Select
+
+CQL没有连接查询和子查询，因此select语句只适用于单个表。
+
+- `LIMIT` 选项限制查询返回的行数，而 `PER PARTITIONLIMIT` 选项限制查询为给定分区返回的行数，两种类型的限制可以在同一语句中使用。
+- `GROUP BY` 允许将一组列中共享相同值的所有选定行压缩为单个行，只能在分区键级别或在集群列级别对行进行分组。因此，`GROUP BY` 选项只接受主键顺序中的 **主键列名** 作为参数。
+- `ORDER BY` 允许选择返回结果的顺序，ASC用于升序，DESC用于降序，默认ASC。它使用列名称列表以及列的顺序作为参数。
+- `ALLOW FILTERING` 允许显式地允许（一些）需要过滤的查询。
+  假设建表:
+
+  ```SQL
+    create table test(c1 int,c2 int, c3 int,c4 int, primary key(c1,c2,c3));
+    -- c1 是分区键(partition key)
+    -- c2、c3 是排序键(clustering key)
+    -- c4 是普通列
+  ```
+
+  需要加上的场景:
+  - 缺少 partition key 的等值过滤条件.
+    `select * from test where c2=2;`
+  - 对普通列值过滤.
+    `select * from test where c1=1 and c2=1 and c3=1 and c4>10;`
+  - 范围查询后跟精确查询
+    `select * from test where c1=1 and c2>20 and c3=10;`
+- 。。。
+
 #### Describe
 
-此命令描述 Cassandra 及其对象的当前集群，可简写为 `desc`
+此命令描述 Cassandra 及其对象的当前集群，可简写为 `desc`，不区分大小写。
 
 Command | Usage
 :-----  | :-----
 desc cluster | 提供有关集群的信息
-desc Keyspaces | 列出集群中的所有键空间
+desc Kkyspaces | 列出集群中的所有键空间
 desc tables | 列出了键空间中的所有表
 desc table `table_name` <br>(table 可省略) | 提供表的描述
 desc types | 列出所有用户定义的数据类型
 
+#### 实例
+
+Assume we have 2 tables called Inspections and Restaurants.
+
+```SQL
+-- List 10 restaurants.
+select * from Restaurants limit 10;
+
+-- List all the restaurant names.
+select name from Restaurants;
+
+-- Name and borough of restaurant id 41569764.
+select name,borough from Restaurants where id=41569764;
+
+-- Dates and grades of the inspections of restaurant id 41569764.
+select inspectiondate,grade from inspections where idrestaurant=41569764;
+
+-- Names of the restaurants offering French cuisine.
+select name from restaurants where cuisinetype='French';
+
+-- Names of the restaurants from the BROOKLYN borough.
+select name from restaurants where borough='BROOKLYN' Allow Filtering;
+
+-- Grades and scores of inspections for restaurant id 41569764 with a score of at least 10.
+select grade,score from inspections
+where idrestaurant=41569764 and score > 10 allow filtering;
+
+-- Grades (non null) of inspections with a score greater than 30.
+-- CQL 没有 NOT 或 != 操作
+select grade from inspections where score>30 and grade>'' allow filtering;
+
+-- Number of results for the previous query.
+select count(grade) from inspections where score > 30 allow filtering;
+```
+
+## Cassandra and Big Data – Conclusions
+
+Cassandra is considered today as one of the most powerful NoSQL databases in a Big Data environment. When a real-world project requires working on very large volumes of data, the challenge is to write the data quickly. And on this point, Cassandra has demonstrated its superiority. As we saw before, the scalability of Cassandra makes it particularly suitable for an environment where data are distributed on multiple servers. Thanks to Cassandra's architecture, distribution requires lightweight management, balanced over all nodes.
+
+One would think that putting a Cassandra cluster in production is done with a few simple steps/clicks. In reality, this may be much more delicate. Indeed, Cassandra offers a very open data modeling, which gives access to a lot of possibilities, and allows above all to do anything. Unlike the relational data, with Cassandra, we cannot just store documents. It is indeed necessary to have a detailed knowledge of the data that will be stored, the way in which it will be queried, its distribution on the different nodes. The design of the Cassandra data model therefore requires special attention, as poorly performing modeling in production with PBs of data will give catastrophic results.
+
+Cassandra also makes it possible not to constrain the number of key / value pairs in the documents. When a document has a lot of values, we are talking about a “wide row”. Wide rows are an advantage in terms of modeling, but the more values a document has, the heavier it is. We must therefore consider this tradeoff. Remember also that in Cassandra, being a NoSQL database, the concept of joins does not exist.
+
+The similarities with the relational model and particularly SQL make the initial learning curve easy, particularly to those who have a lot of experience with SQL. On the other hand, they can lead users to underestimate this extremely powerful database. Cassandra offers high performance, provided that the model of the data is adequate for the workload.
+ 
 ## Reference
 
 [W3CSchool cassandra教程](https://www.w3cschool.cn/cassandra/)
 
 [Cassandra 的使用者](https://www.zhihu.com/question/19592244)
+
+[数据类型](https://blog.csdn.net/vbirdbest/article/details/77802031)
