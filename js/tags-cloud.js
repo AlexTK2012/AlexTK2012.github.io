@@ -52,6 +52,9 @@ window.onload=function ()
             update();
             setTimeout(arguments.callee, 40);
         })();
+
+    // 优化等待效果
+    oDiv.style.visibility='unset'
 };
 function update()
 {
