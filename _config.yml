@@ -123,3 +123,6 @@ click_fireworks: true
 
 # 页面背景粒子效果
 bg_nest: true
+
+# totop按钮
+rocket: true

@@ -52,6 +52,7 @@ header-img: "img/animate-bg/static-bg1.jpg"
 <script type="text/javascript" src="/js/love.js"></script>
 {% endif %}
 
+
 {% if site.click_fireworks %}
 <!-- 增加点击烟花效果 -->
 <!-- <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 1; pointer-events: none;" ></canvas> 
@@ -59,7 +60,16 @@ header-img: "img/animate-bg/static-bg1.jpg"
 <script type="text/javascript" src="/js/fireworks.js"></script> -->
 {% endif %}
 
+
 {% if site.bg_nest %}
 <!-- 增加背景canvas-nest效果 -->   
 <script type="text/javascript" color="167,198,202" opacity='0.5' zIndex="-2" count="99" src="/js/canvas-nest.min.js"></script>
+{% endif %}
+
+
+{% if site.rocket %}
+<!-- 增加 totop 按钮 -->
+<link rel="stylesheet" href="/css/rocket.css">
+<a id="rocket" href="#top" class=""></a>
+<script type="text/javascript" src="/js/totop.js" async=""></script>
 {% endif %}
