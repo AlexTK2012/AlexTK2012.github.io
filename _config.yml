@@ -112,6 +112,9 @@ friends: [
 # copyright 复制文章添加版权申明
 post_copyright: false
 
+# 主页 tags 云朵效果
+tags_cloud: true
+
 # 页面点击爱心效果
 click_love: true
 

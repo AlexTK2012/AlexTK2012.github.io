@@ -147,6 +147,7 @@ layout: default
       s.parentNode.insertBefore(o, s);
     }
 </script>
+
 {% if site.anchorjs %}
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
@@ -173,6 +174,7 @@ layout: default
 {% endif %}
 
 
+
 {% if site.post_copyright %}
 <!-- copy文章添加版权申明 -->
 <script>
@@ -190,16 +192,11 @@ layout: default
             var htmlData = '<div>'
                 + node.innerHTML
                 + '<br/><br/>Give me a Star if you like, fork or just clone to use :)<br/>'
-                + 'Author: AlexTK2012<br/>Link: '
-                + location.href
-                + '<br/>'
+                + 'Author: AlexTK2012<br/>'
                 + '</div>';
             var textData = window.getSelection().getRangeAt(0)
                 + '\n\nGive me a Star if you like, fork or just clone to use :)\n'
-                + 'Author: AlexTK2012\n'
-                + 'Link: '
-                + location.href
-                + '\n';
+                + 'Author: AlexTK2012\n';
             if(event.clipboardData){
                 event.clipboardData.setData("text/html", htmlData);
                 //setData(剪贴板格式, 数据) 给剪贴板赋予指定格式的数据。返回 true 表示操作成功。
