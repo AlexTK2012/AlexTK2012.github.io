@@ -108,3 +108,13 @@ friends: [
         href: "https://everstar.xyz"
     }
 ]
+
+
+# 页面点击爱心效果
+click_love: true
+
+# 页面点击烟火效果
+click_fireworks: true
+
+# 页面背景粒子效果
+bg_nest: true
