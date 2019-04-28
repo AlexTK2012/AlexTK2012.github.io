@@ -1,8 +1,10 @@
-# [Alex Blog](https://alextk2012.github.io)
+# Alex Blog
 
 ### 我来到，我看见，我记录
 
 自己的窝才是最舒服的窝。
+
+> Ported Theme of [Hux Blog](https://github.com/Huxpro/huxpro.github.io), Thank [Huxpro](https://github.com/Huxpro) for designing such a flawless theme.
 
 搭建过程:
 1. fork 下 [Hux](https://github.com/Huxpro/huxpro.github.io) 大大的git主页。
@@ -11,5 +13,3 @@
 
 <!-- ![](http://huangxuan.me/img/blog-desktop.jpg) -->
 ![](/img/intro.jpg)
-
-> Ported Theme of [Hux Blog](https://github.com/Huxpro/huxpro.github.io), Thank [Huxpro](https://github.com/Huxpro) for designing such a flawless theme.
