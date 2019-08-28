@@ -174,6 +174,8 @@ System.gc(), finalize()
 
 Java 集合框架主要包括两种类型的容器，一种是集合（Collection），存储一个元素集合，另一种是图（Map），存储键/值对映射.
 
+![Java-collection](/img/in-post/post-interview/Java-collection-framework.png)
+
 #### Collection: 最基本的集合接口
 
 * Set: 无序,不能包含重复元素
@@ -183,30 +185,48 @@ Java 集合框架主要包括两种类型的容器，一种是集合（Collectio
   * EnumSet: 所有元素都必须是指定枚举类型的枚举值，该枚举类型在创建EnumSet时显式、或隐式地指定。EnumSet的集合元素也是有序的。
 * List: 代表一个元素有序、可重复的集合，集合中每个元素都有其对应的顺序索引。
   * LinkedList: 非同步的（unsynchronized）
-
-        LinkedList是基于链表的数据结构，
-        对于需要快速插入，删除元素，应该使用LinkedList。
-        insert方法在 LinkedList的首部或尾部，可被用作堆栈，队列，双向队列。
+    * LinkedList是基于链表的数据结构，
+    * 对于需要快速插入，删除元素，应该使用LinkedList。
+    * insert方法在 LinkedList的首部或尾部，可被用作堆栈，队列，双向队列。
   * ArrayList: 可变大小的数组，非同步的（unsynchronized）
-
-        ArrayList是实现了基于动态数组的数据结构，
-        如果需要快速随机访问元素，应该使用ArrayList。
+    * ArrayList是实现了基于动态数组的数据结构，
+    * 如果需要快速随机访问元素，应该使用ArrayList。
   * Vector: 类似ArrayList，但Vector是同步的
   * Stack: 后进先出的堆栈，有push,pop,peek等方法。
-* Queue: 模拟"队列"这种数据结构(先进先出 FIFO)。
+* Queue: 模拟"队列"这种数据结构（先进先出 FIFO）。
+  * LinkedList类实现了Queue接口，因此我们可以把LinkedList当成Queue来用。
+  * remove、element、offer 、poll、peek 其实是属于Queue接口。
+  * add、remove（移除并返回头部元素）、element（返回头部元素），失败会抛异常。
+  * offer、poll、peek，对应情况失败会返回false、null、null
 
 #### Map: 保存具有"映射关系"的数据
 
-* Hashtable: Hashtable继承Map接口，实现一个key-value映射的哈希表。任何非空（non-null）的对象都可作为key或者value.
+* Hashtable: 继承Map接口，实现一个key-value映射的哈希表。任何非空（non-null）的对象都可作为key或者value，HashTable是同步的。
 * HashMap: 不能保证元素的顺序一样，HashMap是非同步的，并且允许null，即null value和null key
   * LinkedHashMap也使用双向链表来维护key-value对的次序
+  * 容量(Capacity)，即HashMap中数组的大小; 
+  * 负载因子(load factor) = 实际键值对个数 / hashmap中数组的大小
 * SortedMap
   * TreeMap就是一个红黑树数据结构
 * WeakHashMap: 类似HashMap，对key实行“弱引用”，如果一个key不再被外部所引用，那么该key可以被GC回收。
 * IdentityHashMap
 * EnumMap
 
-![Java-collection](/img/in-post/post-interview/Java-collection-framework.png)
+**[HashMap vs HashTable vs ConCurrentHashMap 对比](https://juejin.im/post/5add97a46fb9a07aa212f4c0)**
+
+#### 时间复杂度
+
+||访问指定元素|查找|插入|删除|
+|--|--|--|--|--|
+|数组|O(1)|O(n)|O(n)|O(n)|
+|链表|O(n)|O(n)|O(1)|O(1)|
+
+HashMap 理想情况下查找的时间复杂度为 O(1)：
+
+1. 判断key，根据key算出索引。
+2. 根据索引获得索引位置所对应的键值对链表。
+3. 遍历键值对链表，根据key找到对应的Entry键值对。
+4. 拿到value。
 
 ## [Java 内部类](https://juejin.im/post/5a903ef96fb9a063435ef0c8)
 

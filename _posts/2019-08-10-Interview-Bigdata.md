@@ -9,30 +9,7 @@ tags:                                       # 标签，可多个
     - Interview
 ---
 
-## Spark
-
-#### Basic
-
-* RDD(Resilient,Distributed,Dataset) 不可变的分布式对象集合
-* DAG 有向无环图: 描述了RDD的依赖关系，这种关系也被称之为lineage，RDD的依赖关系使用Dependency维护。
-
-  ![DAG](/img/in-post/post-interview/Spark-DAG.png)
-* 宽依赖、窄依赖，DAGScheduler根据 wide dependency划分Stage
-* RDDs 算子: Transformations and Actions, **Spark is lazy**
-* Transformations:
-  * Narrow Transformation: map, union, flatmap, filter...
-  * Wide Transformation: join, reduceByKey, groupByKey, sortByKey...
-* Action: reduce, count, countByKey, collect, first, take, foreach, OutputFunction like saveAsTextFile...
-
-#### RDD,Dataset,Dataframe
-
-* TODO 
-
-RDD是分布式的Java对象的集合。DataFrame是分布式的Row对象的集合。
-
-RDD不支持sparksql操作
-
-Dataset可以认为是DataFrame的一个特例，主要区别是Dataset每一个record存储的是一个强类型值而不是一个Row。
+## HDFS
 
 #### HDFS HA
 
@@ -45,6 +22,8 @@ NameNode 主备切换主要由 ZKFailoverController、HealthMonitor 和 ActiveSt
 
 ***主备切换流程***
 ![switch](/img/in-post/post-interview/HDSF-HA-switch.png)
+
+## Yarn
 
 #### Yarn 二次调度
 
@@ -62,6 +41,52 @@ Yarn 采用 Master/Slave 结构，整体采用双层调度架构。
 * 粗粒度资源申请(Spark）: 在Application执行之前，将所有的资源申请完毕，当资源申请成功后，才会进行任务的调度，当所有的task执行完成后，才会释放这部分资源。
 * 细粒度资源申请（MapReduce）: Application执行之前不需要先去申请资源，而是直接执行，让job中的每一个task在执行前自己去申请资源，task执行完成就释放资源。
 
+## Spark
+
+#### Basic
+
+* RDD(Resilient,Distributed,Dataset) 不可变的分布式对象集合
+* DAG 有向无环图: 描述了RDD的依赖关系，这种关系也被称之为lineage，RDD的依赖关系使用Dependency维护。
+
+  ![DAG](/img/in-post/post-interview/Spark-DAG.png)
+* 宽依赖、窄依赖，DAGScheduler根据 wide dependency划分Stage
+* RDDs 算子: Transformations and Actions, **Spark is lazy**
+* Transformations:
+  * Narrow Transformation: map, union, flatmap, filter...
+  * Wide Transformation: join, reduceByKey, groupByKey, sortByKey...
+* Action: reduce, count, countByKey, collect, first, take, foreach, OutputFunction like saveAsTextFile...
+
+#### RDD,Dataset,Dataframe
+
+***RDD***
+
+弹性分布式数据集 Resilient Distributed Dataset 是分布式的Java对象的集合。
+
+* 优点：
+  1. 强大，内置很多函数操作，group，map，filter等，方便处理结构化或非结构化数据；
+  2. 面向对象编程，直接存储的java对象，类型转化也安全；
+
+* 缺点：
+  1. 由于它基本和hadoop一样万能的，因此没有针对特殊场景的优化，比如对于结构化数据处理相对于sql来比非常麻烦；
+  2. 默认采用的是java序列号方式，序列化结果比较大，而且数据存储在java堆内存中，导致gc比较频繁；
+
+***DataFrame***
+
+DataFrame是分布式的Row对象的集合。
+
+* 优点：
+  1. 结构化数据处理非常方便，支持Avro, CSV, Elastic search, Cassandra等kv数据，也支持HIVE tables, MySQL等传统数据表；
+  2. 有针对性的优化，由于数据结构元信息spark已经保存，序列化时不需要带上元信息，减少了序列化大小，而且数据保存在堆外内存中，减少了gc次数；
+  3. hive兼容，支持hql，udf等；
+* 缺点：
+  1. 编译时不能类型转化安全检查，运行时才能确定是否有问题
+  2. 对于对象支持不友好，rdd内部数据直接以java对象存储，dataframe内存存储的是row对象而不能是自定义对象
+
+***Dataset***
+
+* DataFrame = Dataset[Row], Dataset每一个record存储的是一个强类型值而不是一个Row。
+* DataFrame和Dataset API都是基于Spark SQL引擎构建的
+
 #### event loop
 
 #### distinct 原理
@@ -71,7 +96,8 @@ reduceByKey
 #### 并行度设置
 
 RDD：spark.default.parallelism
-DataFrame:
+DataFrame: 
+RDD.repartition：给RDD重新设置partition的数量 [repartitions 或者 coalesce]
 
 #### 数据倾斜
 
