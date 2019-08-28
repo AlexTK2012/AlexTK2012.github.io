@@ -24,19 +24,29 @@ tags:                                       # 标签，可多个
   * Wide Transformation: join, reduceByKey, groupByKey, sortByKey...
 * Action: reduce, count, countByKey, collect, first, take, foreach, OutputFunction like saveAsTextFile...
 
-## HDFS HA
+#### RDD,Dataset,Dataframe
+
+* TODO 
+
+RDD是分布式的Java对象的集合。DataFrame是分布式的Row对象的集合。
+
+RDD不支持sparksql操作
+
+Dataset可以认为是DataFrame的一个特例，主要区别是Dataset每一个record存储的是一个强类型值而不是一个Row。
+
+#### HDFS HA
 
 HDFS NameNode 和 YARN ResourceManger 的高可用方案类似，HDFS NameNode 对于数据存储和数据一致性的要求比 YARN ResourceManger 高得多，所以 HDFS NameNode 的高可用实现更为复杂一些。
 
-**NameNode 高可用整体架构**
+***NameNode 高可用整体架构***
 ![HA](/img/in-post/post-interview/HDFS-HA.png)
 
 NameNode 主备切换主要由 ZKFailoverController、HealthMonitor 和 ActiveStandbyElector 这 3 个组件来协同实现.
 
-**主备切换流程**
+***主备切换流程***
 ![switch](/img/in-post/post-interview/HDSF-HA-switch.png)
 
-## Yarn 二次调度
+#### Yarn 二次调度
 
 [yarn资源调度流程](https://zhuanlan.zhihu.com/p/41151457)
 
@@ -63,7 +73,7 @@ reduceByKey
 RDD：spark.default.parallelism
 DataFrame:
 
-## 数据倾斜
+#### 数据倾斜
 
 **原理**: 在进行shuffle的时候，必须将各个节点上相同的key拉取到某个节点上的一个task来进行处理，此时如果某个key对应的数据量特别大的话，就会发生数据倾斜
 
@@ -78,6 +88,41 @@ DataFrame:
 ## Flink
 
 RDDs vs DataFrames and Datasets
+
+#### [反压](http://wuchong.me/blog/2016/04/26/flink-internals-how-to-handle-backpressure/)
+
+反压：短时负载高峰导致系统接收数据的速率远高于它处理数据的速率。
+
+***Storm***
+通过监控 Bolt 中的接收队列负载情况，如果超过高水位值就会将反压信息写到 Zookeeper ，Zookeeper 上的 watch 会通知该拓扑的所有 Worker 都进入反压状态，最后 Spout 停止发送 tuple。
+
+***JStorm***
+认为直接停止 Spout 的发送太过暴力，因此通过逐级降速来进行反压的，效果会较 Storm 更为稳定，但算法也更复杂。另外 JStorm 没有引入 Zookeeper 而是通过 TopologyMaster 来协调拓扑进入反压状态，这降低了 Zookeeper 的负载。
+
+***[Spark](https://blog.51cto.com/14309075/2414995)***
+需要反压的场景:
+
+1. 首次启动Streaming应用，kafka保留了大量未消费历史消息，并且auto.offset.reset=latest，可以防止第一个batch接收大量消息、处理时间过长和内存溢出
+2. 防止kafka producer突然生产大量消息，一个batch接收到大量数据，导致batch之间接收到的数据倾斜
+
+原理：
+
+1. 开启反压机制，即设置**spark.streaming.backpressure.enabled** 为true；
+2. spark会在作业执行结束后，调用**RateController.onBatchCompleted()** 更新batch的元数据信息：batch处理结束时间、batch处理时间、调度延迟时间、batch接收到的消息量等；
+3. Spark Streaming是先从broker里查询到每个分区的latestOffset，这样就可以得到每个分区的offset range，再用range和上一步预估的速率做对比计算就可以确定每个分区的处理的消息量；
+   * 有效速率 = min（maxRatePerPartition，预估的速率）
+   * 一个batch的每个分区每秒接收到的消息量 = batchDuration * 有效速率
+
+* 若是基于Kafka Receiver的数据源，可以通过设置spark.streaming.receiver.maxRate来控制最大输入速率
+* 若是基于Direct的数据源(如Kafka Direct Stream)，则可以通过设置spark.streaming.kafka.maxRatePerPartition来控制最大输入速率
+* 参考：https://zhuanlan.zhihu.com/p/45954932
+
+***Flink***
+没有使用任何复杂的机制来解决反压问题！它利用自身作为纯数据流引擎的优势来优雅地响应反压问题。
+
+Flink 在运行时主要由 operators 和 streams 两大组件构成。分布式阻塞队列 就是这些逻辑流，队列容量是通过缓冲池（LocalBufferPool）来实现的。
+
+Flink 中的数据传输相当于已经提供了应对反压的机制。因此，Flink 所能获得的最大吞吐量由其 pipeline 中最慢的组件决定。
 
 ## [Redis](https://github.com/CyC2018/CS-Notes/blob/master/notes/Redis.md)
 
