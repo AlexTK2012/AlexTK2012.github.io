@@ -224,6 +224,69 @@ public class InstanceFactory {
 
 ## 反射
 
+通过一个对象获得完整的包名和类名
+testReflect.getClass().getName()
+
+Class<?> clazz = Class.forName("net.xsoftlab.baike.TestReflect");
+Field[] field = clazz.getDeclaredFields();
+Method method[] = clazz.getMethods();
+
 
 ## 单例模式
+
+单例模式的意思就是只有一个实例。单例模式确保某一个类只有一个实例，而且自行实例化并向整个系统提供这个实例。这个类称为单例类。
+
+两种实现：
+
+* 懒汉模式（类加载时不初始化）
+
+```Java
+public class LazySingleton {
+    //懒汉式单例模式
+    //比较懒，在类加载时，不创建实例，因此类加载速度快，但运行时获取对象的速度慢
+    private static LazySingleton intance = null;//静态私用成员，没有初始化
+
+    private LazySingleton()
+    {
+        //私有构造函数
+    }
+
+    public static synchronized LazySingleton getInstance()  //静态，同步，公开访问点
+    {
+        if(intance == null)
+        {
+            intance = new LazySingleton();
+        }
+        return intance;
+    }
+}
+```
+
+* 饿汉式单例模式（在类加载时就完成了初始化，所以类加载较慢，但获取对象的速度快）
+
+```Java
+public class EagerSingleton {
+    //饿汉单例模式
+    //在类加载时就完成了初始化，所以类加载较慢，但获取对象的速度快
+    private static EagerSingleton instance = new EagerSingleton();//静态私有成员，已初始化
+
+    private EagerSingleton()
+    {
+        //私有构造函数
+    }
+
+    public static EagerSingleton getInstance()  //静态，不用同步（类加载时已初始化，不会有多线程的问题）
+    {
+        return instance;
+    }
+}
+```
+
+## 工厂模式
+
+工厂方法模式是简单工厂的仅一步深化， 在工厂方法模式中，我们不再提供一个统一的工厂类来创建所有的对象，而是针对不同的对象提供不同的工厂。也就是说每个对象都有一个与之对应的工厂。
+
+定义：
+　　定义一个用于创建对象的接口，让子类决定将哪一个类实例化。工厂方法模式让一个类的实例化延迟到其子类。
+　　这次我们先用实例详细解释一下这个定义，最后在总结它的使用场景。
 

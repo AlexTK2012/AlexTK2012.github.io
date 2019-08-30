@@ -96,8 +96,17 @@ reduceByKey
 #### 并行度设置
 
 RDD：spark.default.parallelism
-DataFrame: 
+Spark SQL： spark.sql.shuffle.partitions=[num_tasks]
 RDD.repartition：给RDD重新设置partition的数量 [repartitions 或者 coalesce]
+
+#### Shuffle
+
+[Spark Shuffle](https://www.cnblogs.com/arachis/p/Spark_Shuffle.html)
+Shuffle是连接map阶段和reduce阶段的桥梁。（宽依赖涉及shuffle操作）
+
+shuffle操作需要将数据进行重新聚合和划分，然后分配到集群的各个节点上进行下一个stage操作，这里会涉及集群不同节点间的大量数据交换。由于不同节点间的数据通过网络进行传输时需要先将数据写入磁盘，因此集群中每个节点均有大量的文件读写操作，从而导致shuffle操作十分耗时。
+
+Shuffle操作包含当前阶段的Shuffle Write（存盘）和下一阶段的Shuffle Read（fetch）,两种模式的主要差异是在Shuffle Write阶段
 
 #### 数据倾斜
 
@@ -109,7 +118,22 @@ RDD.repartition：给RDD重新设置partition的数量 [repartitions 或者 coal
 
 * 过滤少数导致倾斜的key
 * 提高shuffle操作的并行度
-* 局部聚合和全局聚合
+* 局部聚合和全局聚合，进行两阶段聚合
+* 将reduce join转为map join，不使用join算子进行连接操作，而使用Broadcast变量与map类算子实现join操作，进而完全规避掉shuffle类的操作。
+* 采样倾斜key并分拆join操作（join的两表都很大，但仅一个RDD的几个key的数据量过大）
+  * 对包含少数几个数据量过大的key的那个RDD，通过sample算子采样出一份样本来，然后统计一下每个key的数量，计算出来数据量最大的是哪几个key。
+  * 然后将这几个key对应的数据从原来的RDD中拆分出来，形成一个单独的RDD，并给每个key都打上n以内的随机数作为前缀，而不会导致倾斜的大部分key形成另外一个RDD。
+  * 接着将需要join的另一个RDD，也过滤出来那几个倾斜key对应的数据并形成一个单独的RDD，将每条数据膨胀成n条数据，这n条数据都按顺序附加一个0~n的前缀，不会导致倾斜的大部分key也形成另外一个RDD。
+  * 再将附加了随机前缀的独立RDD与另一个膨胀n倍的独立RDD进行join，此时就可以将原先相同的key打散成n份，分散到多个task中去进行join了。
+  * 而另外两个普通的RDD就照常join即可。
+  * 最后将两次join的结果使用union算子合并起来即可，就是最终的join结果。
+* 使用随机前缀和扩容RDD进行join(RDD中有大量的key导致数据倾斜)
+
+参考：https://www.infoq.cn/article/the-road-of-spark-performance-tuning
+
+#### 实例
+
+Spark 离线优化，存在笛卡尔积
 
 ## Flink
 
@@ -238,4 +262,3 @@ redis支持多种数据结构，其中dict是使用频率相当高。
 * 为了主从复制的速度和连接的稳定性，Master和Slave最好在同一个局域网内
 * 尽量避免在压力很大的主库上增加从库
 * 主从复制不要用图状结构，用单向链表结构更为稳定，即：Master <- Slave1 <- Slave2 <- Slave3...这样的结构方便解决单点故障问题，实现Slave对Master的替换。如果Master挂了，可以立刻启用Slave1做Master，其他不变。
-
