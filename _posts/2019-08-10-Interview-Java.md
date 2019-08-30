@@ -290,3 +290,59 @@ HashMap 理想情况下查找的时间复杂度为 O(1)：
 * 单例模式：该类负责创建自己的对象，同时确保只有单个对象被创建。这个类提供了一种访问其唯一的对象的方式，可以直接访问，不需要实例化该类的对象。
 * Model-View-Controller（模型-视图-控制器）模式：这种模式用于应用程序的分层开发。
 * ...
+
+#### 单例模式
+
+单例模式的意思就是只有一个实例。单例模式确保某一个类只有一个实例，而且自行实例化并向整个系统提供这个实例。这个类称为单例类。
+
+两种实现：
+
+* 懒汉模式（类加载时不初始化）
+
+```java
+public class LazySingleton {
+//懒汉式单例模式
+//比较懒，在类加载时，不创建实例，因此类加载速度快，但运行时获取对象的速度慢
+private static LazySingleton intance = null;//静态私用成员，没有初始化
+
+private LazySingleton()
+{
+        //私有构造函数
+}
+
+public static synchronized LazySingleton getInstance()  //静态，同步，公开访问点
+{
+        if(intance == null)
+        {
+        intance = new LazySingleton();
+        }
+        return intance;
+}
+}
+```
+
+* 饿汉式单例模式（在类加载时就完成了初始化，所以类加载较慢，但获取对象的速度快）
+
+```java
+public class EagerSingleton {
+    //饿汉单例模式
+    //在类加载时就完成了初始化，所以类加载较慢，但获取对象的速度快
+    private static EagerSingleton instance = new EagerSingleton();//静态私有成员，已初始化
+
+    private EagerSingleton()
+    {
+        //私有构造函数
+    }
+
+    public static EagerSingleton getInstance()  //静态，不用同步（类加载时已初始化，不会有多线程的问题）
+    {
+        return instance;
+    }
+}
+```
+
+#### 工厂模式
+
+工厂方法模式是简单工厂的仅一步深化， 在工厂方法模式中，我们不再提供一个统一的工厂类来创建所有的对象，而是针对不同的对象提供不同的工厂。也就是说每个对象都有一个与之对应的工厂。
+
+定义：定义一个用于创建对象的接口，让子类决定将哪一个类实例化。工厂方法模式让一个类的实例化延迟到其子类。

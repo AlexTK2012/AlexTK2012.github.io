@@ -15,6 +15,10 @@ tags:                                       # 标签，可多个
 
 [前序、中序、后序遍历](https://blog.csdn.net/m0_37698652/article/details/79218014)
 
+* 前序遍历：根=> 左=> 右
+* 中序遍历：左=> 根=> 右
+* 后序遍历：左=> 右=> 根
+
 二叉查找树（BST）:
 
 * 左子树上所有结点的值均小于或等于它的根结点的值。
@@ -47,4 +51,13 @@ tags:                                       # 标签，可多个
 
 #### DFS & BFS
 
+## 调度算法
+
+#### [LRU](https://www.jianshu.com/p/b1ab4a170c3c)
+
+Least Recently Used：理想的LRU应该可以在O(1)的时间内读取一条数据或更新一条数据，也就是说读写的时间复杂度都是O(1)。
+
+## 海量数据处理
+
+https://blog.csdn.net/v_JULY_v/article/details/6279498
 

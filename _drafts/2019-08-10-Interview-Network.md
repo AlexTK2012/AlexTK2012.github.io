@@ -31,3 +31,8 @@ https://github.com/CyC2018/CS-Notes/blob/master/notes/缓存.md
 
 [缓冲区溢出攻击](
 https://www.cnblogs.com/fanzhidongyzby/archive/2013/08/10/3250405.html)
+
+## TCP
+
+三次握手，四次挥手： https://blog.csdn.net/whuslei/article/details/6667471
+
