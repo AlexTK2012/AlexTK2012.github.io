@@ -75,4 +75,11 @@ tags:                                       # 标签，可多个
 * [Where & Having 区别](https://blog.csdn.net/yexudengzhidao/article/details/54924471)
 * [MySQL 存储过程](https://www.runoob.com/w3cnote/mysql-stored-procedure.html)
 
-[Reference](https://blog.csdn.net/justloveyou_/article/details/78308460)
+## 2PC
+
+[2阶段事务提交](https://segmentfault.com/a/1190000014810628)
+
+2PC即innodb对于事务的两阶段提交机制。当mysql开启binlog的时候，会存在一个内部XA的问题：事务在存储引擎层（redo）commit的顺序和在binlog中提交的顺序不一致的问题。
+
+[分布式事务](https://juejin.im/post/5b5a0bf9f265da0f6523913b)
+解决：2PC、TCC、本地消息表、MQ、Saga

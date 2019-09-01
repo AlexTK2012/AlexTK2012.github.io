@@ -273,6 +273,7 @@ HashMap 理想情况下查找的时间复杂度为 O(1)：
 
 **Final**
 * 修饰类：表示该类不能被继承；
+  * 父类的private方法会隐式地被指定为final方法。
 * 修饰方法：表示方法不能被重写；
 * 修饰变量：表示变量只能一次赋值以后值不能被修改（常量）。
 
@@ -281,8 +282,6 @@ HashMap 理想情况下查找的时间复杂度为 O(1)：
 
 **assertion**
 * (断言)在软件开发中是一种常用的调试方式
-
-**final, finally, finalize**
 
 ## [设计模式](https://www.runoob.com/design-pattern/design-pattern-tutorial.html)
 

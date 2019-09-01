@@ -38,79 +38,123 @@ tags:                                       # 标签，可多个
 
 ## [Java 多线程](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java%20并发.md)
 
+#### 线程状态
+
+* 新建（New）
+* 可运行（Runnable）：Java线程中将就绪（ready）和运行中（running）统称为可运行
+* 阻塞（Blocked）：线程阻塞于锁
+* 无限期等待（Waiting）：进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）
+* 限期等待（Timed Waiting）：指定的时间后自行返回
+* 死亡（Terminated)
 ![thread](/img/in-post/post-interview/Java-thread-state.png)
 
 #### 创建线程
 
-实现 Runnable 接口
+***继承 Thread 类***
+
+* 重写该类的run()方法。该方法为线程执行体。
+* 创建Thread子类的实例。即线程对象。
+* 调用线程对象的start()方法启动该线程
+
+```Java
+public static class MyThread extends Thread {
+    public void run() {
+        // ...
+    }
+}
+new MyThread().start();
+```
+
+***实现 Runnable 接口***
 
 * 重写该接口的run()方法。该方法为线程执行体。
 * 创建Runnable实现类的实例。并以此实例作为Thread的target来创建Thread对象。该Thread对象才是真正的线程对象。
 * 调用线程对象（该Thread对象）的start()方法启动该线程。
 
-实现 Callable 接口
+```Java
+public class MyRunnable implements Runnable {
+    public void run() {
+        // ...
+    }
+}
+new Thread(new MyRunnable(),"thread1").start();
+
+new Thread(()->{...},"thread2").start();
+```
+
+***实现 Callable 接口***
 
 * 与 Runnable 相比，Callable 可以有返回值，返回值通过 FutureTask 进行封装。
+* 通过Future 对象的 get() 获取到Callable任务返回的Object了。get方法是阻塞的，即：线程无返回结果，get方法会一直等待。
 
-继承 Thread 类
+```Java
+public class MyCallable implements Callable<Integer> {
+    public Integer call() {
+        return 123;
+    }
+}
+FutureTask<Integer> ft = new FutureTask<>(new MyCallable());
 
-* 重写该类的run()方法。该方法为线程执行体。
-* 创建Thread子类的实例。即线程对象。
-* 调用线程对象的start()方法启动该线程
+FutureTask<Integer> ft = new FutureTask<>(() -> {
+    Thread.sleep(100);
+    return 1;
+});
+new Thread(ft).start();
+```
 
 建议 **实现接口 > 继承 Thread**：
 
 * Java 不支持多重继承，因此继承了 Thread 类就无法继承其它类，但是可以实现多个接口；
 * 类可能只要求可执行就行，继承整个 Thread 类开销过大。
 
-PS：start() 和 run() 方法区别在，start()方法被用来启动新创建的线程，start()内部调用了run()方法。
+***线程池 Executors类***
 
-#### 控制线程
+Executor：提供了一系列工厂方法用于创建线程池，返回的线程池都实现了ExecutorService接口。
 
-* join线程：join方法用线程对象调用，如果在一个线程A中调用另一个线程B的join方法，线程A将会等待线程B执行完毕后再执行。
-  
-#### 基础线程机制
+* newCachedThreadPool()：创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。
+  * 线程池为无限大，当执行第二个任务时第一个任务已经完成，会复用执行第一个任务的线程，而不用每次新建线程。
+* newFixedThreadPool(int nThreads)：创建定长线程池，可控制线程最大并发数，超出的线程会在队列中等待。
+* newSingleThreadExecutor()：创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。
+* newScheduledThreadPool()：创建一个支持定时及周期性的任务执行的线程池，多数情况下可用来替代Timer类。
 
-Executor
-Daemon
-sleep()
-yield()
+```Java
+ExecutorService threadPool = Executors.newFixedThreadPool(10);
+threadPool.execute(()->{});
+```
+
+线程池作用：
+
+* 减少了创建和销毁线程的次数，每个工作线程都可以被重复利用，可执行多个任务。
+* 调整线程池中工作线线程的数目，防止因为消耗过多的内存。
 
 #### 守护进程
 
-http://wiki.jikexueyuan.com/project/java-interview-bible/multi-thread.html
+Java中有两类线程：User Thread(用户线程)、Daemon Thread(守护线程) 。
 
-https://www.nowcoder.com/discuss/214906?type=2
+* 当所有非守护线程结束时，程序也就终止，同时会杀死所有守护线程。
+* 线程启动之前使用 setDaemon() 方法可以将一个线程设置为守护线程。
+* 在守护线程中产生的新线程也是守护线程。
 
-#### 互斥与同步
-
-synchronized
-ReentrantLock
-
-#### 线程之间的协作
+#### 线程切换
 
 ***join***
-在线程中调用另一个线程的 join() 方法，会将当前线程挂起，而不是忙等待，直到目标线程结束。
+在线程A 中调用另一个线程B 的 join() 方法，会将当前线程A 挂起，而不是忙等待，直到目标线程B 结束。
 
 ***wait & notify & notifyAll***
 调用 wait() 使得线程等待某个条件满足，线程在等待时会被挂起，当其他线程的运行使得这个条件满足时，其它线程会调用 notify() 或者 notifyAll() 来唤醒挂起的线程。
 
-* 只能用在同步方法或者同步控制块中使用。
-* wait 和 sleep 区别：
+* 只能用在**同步方法或者同步控制块**中使用。
+* notify()或者notifyAll()方法并不是真正释放锁，必须等到synchronized方法或者语法块执行完才真正释放锁；
+* 调用notifyAll()方法能够唤醒所有正在等待这个对象的monitor的线程，唤醒的线程获得锁的概率是随机的，取决于cpu调度；
+* **wait 和 sleep 区别**：
   * wait() 是 Object 的方法，而 sleep() 是 Thread 的静态方法；
-  * wait() 会释放锁，sleep() 不会。
+  * wait() 会释放锁，sleep() 不会；
 
 ***await & signal & signalAll***
 java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协调，可以在 Condition 上调用 await() 方法使线程等待，其它线程调用 signal() 或 signalAll() 方法唤醒等待的线程。
 
 * 相比于 wait() 这种等待方式，await() 可以指定等待的条件，因此更加灵活。
 * 使用 Lock 来获取一个 Condition 对象。
-
-#### volatile 与 synchronized
-
-对象锁，就是就是synchronized 给某个对象 加锁
-用了double check，实际可以不用 volatile，但为什么还要用：
-线程都有monitor，计数器
 
 #### 线程间通信
 
@@ -122,9 +166,30 @@ java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协
 * 管道通信
   * 使用java.io.PipedInputStream 和 java.io.PipedOutputStream进行通信
 
+#### 监视器和锁
+
+#### 互斥与同步
+
+synchronized
+ReentrantLock
+
+#### volatile 与 synchronized
+
+执行控制的目的是控制代码执行（顺序）及是否可以并发执行。
+
+内存可见控制的是线程执行结果在内存中对其它线程的可见性。根据Java内存模型的实现，线程在具体执行时，会先拷贝主存数据到线程本地（CPU缓存），操作完成后再把结果从线程本地刷到主存。
+
+区别：
+
+* volatile本质是在告诉jvm当前变量在寄存器（工作内存）中的值是不确定的，需要从主存中读取； synchronized则是锁定当前变量，只有当前线程可以访问该变量，其他线程被阻塞住。
+* volatile仅能使用在变量级别；synchronized则可以使用在变量、方法、和类级别的
+* volatile仅能实现变量的修改可见性，不能保证原子性；而synchronized则可以保证变量的修改可见性和原子性
+* volatile不会造成线程的阻塞；synchronized可能会造成线程的阻塞。
+* volatile标记的变量不会被编译器优化；synchronized标记的变量可以被编译器优化。
+
 #### [Blocking Queue](https://www.jianshu.com/p/b1408e3e3bb4)
 
-java.util.concurrent包中的Java BlockingQueue接口表示一个线程安全的队列。
+java.util.concurrent 包中的Java BlockingQueue 接口表示一个线程安全的队列。
 
 **操作方法：**
 
