@@ -30,6 +30,15 @@ tags:                                       # 标签，可多个
 * Java堆（Java Heap）
 * 方法区（Methed Area）
 
+#### 编译型
+
+编译型的语言包括：C、C++、Delphi、Pascal、Fortran
+解释型的语言包括：Java、Basic、javascript
+
+有人说Java是编译型的。因为所有的Java代码都是要编译的，.java不经过编译就无法执行。
+
+也有人说Java是解释型的。因为java代码编译后不能直接运行，它是解释运行在JVM上的，所以它是解释型的。
+
 ## [面向对象](https://www.cnblogs.com/hnrainll/archive/2012/09/18/2690846.html)
 
 任何具有状态和行为的实体都称为对象。对象的集合称为类，它是一个逻辑实体。
@@ -72,7 +81,7 @@ java.lang包的八个类在java中称为包装类，包装类可用于实现多�
 |有public、protected和default这些修饰符|默认修饰符是public,不可以使用其它修饰符|
 |抽象方法比接口速度要快| 接口是稍微有点慢的，因为它需要时间去寻找在类中实现的方法|
 
-## [重载&重写](https://www.runoob.com/java/java-override-overload.html)
+## [重写和重载](https://www.runoob.com/java/java-override-overload.html)
 
 方法的重写(Overriding)和重载(Overloading)是java多态性的不同表现。
 
@@ -81,7 +90,7 @@ java.lang包的八个类在java中称为包装类，包装类可用于实现多�
 
 ## [堆栈](https://www.zhihu.com/question/29833675)
 
-JVM的内存可分为3个区：堆(heap)、栈(stack)和方法区(method)
+JVM的内存主要包括3大块：堆(heap)、栈(stack)（虚拟机栈和本地方法栈）、方法区(method)，以及程序计数器。
 
 * 栈区: 每个线程包含一个栈区，栈中只保存方法中（不包括对象的成员变量）的基础数据类型和自定义对象的引用(不是对象)，对象都存放在堆区中每个栈中的数据(原始类型和对象引用)都是私有的，其他栈不能访问。
   
@@ -169,6 +178,21 @@ System.gc(), finalize()
 * 各种连接：数据库、网络连接(socket)和io连接需要显示调用close()
 * 内部类和外部模块的引用
 * 单例模式
+
+#### 内存溢出
+
+*栈内存溢出* 场景：
+
+栈是线程私有的，生命周期与线程相同，每个方法在执行的时候都会创建一个栈帧，用来存储局部变量表（基本数据类型，对象引用类型），操作数栈，动态链接，方法出口等信息。
+
+如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛出StackOverflowError异常，方法递归调用产生这种结果。
+
+*OutOfMemory* 场景：
+
+* 内存中加载的数据量过于庞大，如一次从数据库取出过多数据；
+* 集合类中有对对象的引用，使用完后未清空，使得JVM不能回收；
+* 启动参数内存值设定的过小；
+  * 添加参数-Xms（初始内存）和-Xmx（最大能够使用内存大小）可以用来限制JVM的物理内存使用量
 
 ## [集合框架](https://www.runoob.com/java/java-collections.html)
 

@@ -93,10 +93,12 @@ DataFrame是分布式的Row对象的集合。
 
 reduceByKey
 
-#### 并行度设置
+#### 并行度
 
 RDD：spark.default.parallelism
+
 Spark SQL： spark.sql.shuffle.partitions=[num_tasks]
+
 RDD.repartition：给RDD重新设置partition的数量 [repartitions 或者 coalesce]
 
 #### Shuffle
@@ -135,9 +137,9 @@ Shuffle操作包含当前阶段的Shuffle Write（存盘）和下一阶段的Shu
 
 Spark 离线优化，存在笛卡尔积
 
-## Flink
+#### RDDs vs DataFrames and Datasets
 
-RDDs vs DataFrames and Datasets
+## Flink
 
 #### [反压](http://wuchong.me/blog/2016/04/26/flink-internals-how-to-handle-backpressure/)
 
@@ -294,7 +296,7 @@ redis支持多种数据结构，其中dict是使用频率相当高。
 * 每次更新了相关的数据，都要把该缓存清理掉。
 * 为了避免极端条件下造成的缓存与数据库之间的数据不一致，缓存需要设置一个失效时间。时间到了，缓存自动被清理，达到缓存和数据库数据的“最终一致性”。
 
-[解决：](https://juejin.im/post/5c96fb795188252d5f0fdff2)
+[Redis和mysql保持数据一致的方法：](https://juejin.im/post/5c96fb795188252d5f0fdff2)
 
 * 第一种方案：采用延时双删策略
 

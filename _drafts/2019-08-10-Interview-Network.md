@@ -34,5 +34,26 @@ https://www.cnblogs.com/fanzhidongyzby/archive/2013/08/10/3250405.html)
 
 ## TCP
 
-三次握手，四次挥手： https://blog.csdn.net/whuslei/article/details/6667471
+|TCP/IP协议族|四层协议|
+|--|--|
+|应用层|HTTP、FTP、DNS|
+|传输层|TCP、UDP|
+|网络层|IP（处理在网络上流动的数据包，数据包是网络传输的最小数据单位）|
+|数据链路层|网络（处理连接网络的硬件部分）|
+
+上层协议数据通过**封装**转变为下层协议数据，加上自己的头部信息（链路层还会加上尾部信息）。
+
+#### TCP&UDP
+
+TCP协议提供面向连接、字节流和可靠的传输。TCP协议进行通信的双方必须先建立连接，然后才能开始传输数据。TCP连接是全双工的，也就是说双方的数据读写可以通过一个连接进行。
+
+需要进行三次握手，四次挥手： https://blog.csdn.net/whuslei/article/details/6667471
+
+## [HTTP 协议](https://www.runoob.com/http/http-messages.html)
+
+HTTP协议是构建在TCP/IP协议之上的，是TCP/IP协议的一个子集
+
+HTTP是基于客户端/服务端（C/S）的架构模型，通过一个可靠的链接来交换信息，是一个无状态的请求/响应协议。
+
+请求方法：Get、Post、Head、OPTIONS、PUT、PATCH、DELETE、TRACE 和 CONNECT。
 
