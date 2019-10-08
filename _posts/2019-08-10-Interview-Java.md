@@ -33,6 +33,7 @@ tags:                                       # 标签，可多个
 #### 编译型
 
 编译型的语言包括：C、C++、Delphi、Pascal、Fortran
+
 解释型的语言包括：Java、Basic、javascript
 
 有人说Java是编译型的。因为所有的Java代码都是要编译的，.java不经过编译就无法执行。
@@ -324,23 +325,23 @@ HashMap 理想情况下查找的时间复杂度为 O(1)：
 
 ```java
 public class LazySingleton {
-//懒汉式单例模式
-//比较懒，在类加载时，不创建实例，因此类加载速度快，但运行时获取对象的速度慢
-private static LazySingleton intance = null;//静态私用成员，没有初始化
+        //懒汉式单例模式
+        //比较懒，在类加载时，不创建实例，因此类加载速度快，但运行时获取对象的速度慢
+        private static LazySingleton intance = null;//静态私用成员，没有初始化
 
-private LazySingleton()
-{
-        //私有构造函数
-}
-
-public static synchronized LazySingleton getInstance()  //静态，同步，公开访问点
-{
-        if(intance == null)
+        private LazySingleton()
         {
-        intance = new LazySingleton();
+                //私有构造函数
         }
-        return intance;
-}
+
+        public static synchronized LazySingleton getInstance()  //静态，同步，公开访问点
+        {
+                if(intance == null)
+                {
+                intance = new LazySingleton();
+                }
+                return intance;
+        }
 }
 ```
 
