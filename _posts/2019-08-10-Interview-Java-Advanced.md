@@ -127,7 +127,7 @@ threadPool.execute(()->{});
 * 减少了创建和销毁线程的次数，每个工作线程都可以被重复利用，可执行多个任务。
 * 调整线程池中工作线线程的数目，防止因为消耗过多的内存。
 
-#### 守护进程
+#### 守护线程
 
 Java中有两类线程：User Thread(用户线程)、Daemon Thread(守护线程) 。
 
@@ -286,8 +286,7 @@ public class InstanceFactory {
 [并发编程之 CAS 的原理](https://juejin.im/post/5ae753d8f265da0ba56753ca)
 [Java并发编程：volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
 
-
-## 反射
+## 反射
 
 通过一个对象获得完整的包名和类名
 testReflect.getClass().getName()
