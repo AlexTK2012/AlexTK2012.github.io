@@ -127,7 +127,27 @@ threadPool.execute(()->{});
 * 减少了创建和销毁线程的次数，每个工作线程都可以被重复利用，可执行多个任务。
 * 调整线程池中工作线线程的数目，防止因为消耗过多的内存。
 
+<<<<<<< HEAD
 #### 守护线程
+=======
+核心参数：
+
+corePoolSize：核心线程数，线程池启动时就会创建的线程数量。即使核心线程是空闲的，也不会被回收，除非调用了allowsCoreThreadTimeOut方法为true。
+
+maximumPoolSize：最大线程数，线程池中最大的线程数量。
+
+keepAliveTime：线程超时时间，看源码可知，该参数的意义是线程从工作队列中取出任务的超时时间。
+
+unit：超时时间的单位。
+
+workQueue：工作队列。
+
+threadFactory：线程工厂，要实现ThreadFactory接口，线程池创建线程时会调用ThreadFactory的newThread方法创建线程。
+
+RejectedExecutionHandler：饱和策略。
+
+#### 守护进程
+>>>>>>> 663f6dc7cdeea8c7defc9a2747a39c3bde3f7b53
 
 Java中有两类线程：User Thread(用户线程)、Daemon Thread(守护线程) 。
 
@@ -278,6 +298,14 @@ public class InstanceFactory {
 }
 ```
 
+## [Error与异常](https://blog.csdn.net/iblade/article/details/78196016)
+
+Throwable： 有两个重要的子类：Exception（异常）和 Error（错误），二者都是 Java 异常处理的重要子类，各自都包含大量子类。异常和错误的区别是：异常能被程序本身可以处理，错误是无法处理。
+
+Error（错误）:是程序无法处理的错误，表示运行应用程序中较严重问题。大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM（Java 虚拟机）出现的问题。比如：OutOfMemoryError, StackOverFlowError.
+
+Exception（异常）:是程序本身可以处理的异常。包括运行时异常和非运行时异常(编译异常)。
+
 ## IO & NIO
 
 ## 并发 CAS
@@ -286,7 +314,11 @@ public class InstanceFactory {
 [并发编程之 CAS 的原理](https://juejin.im/post/5ae753d8f265da0ba56753ca)
 [Java并发编程：volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
 
+<<<<<<< HEAD
 ## 反射
+=======
+## 反射
+>>>>>>> 663f6dc7cdeea8c7defc9a2747a39c3bde3f7b53
 
 通过一个对象获得完整的包名和类名
 testReflect.getClass().getName()

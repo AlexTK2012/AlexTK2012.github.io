@@ -49,7 +49,7 @@ Yarn 采用 Master/Slave 结构，整体采用双层调度架构。
 * DAG 有向无环图: 描述了RDD的依赖关系，这种关系也被称之为lineage，RDD的依赖关系使用Dependency维护。
 
   ![DAG](/img/in-post/post-interview/Spark-DAG.png)
-* 宽依赖、窄依赖，DAGScheduler根据 wide dependency划分Stage
+* 宽依赖、窄依赖，DAGScheduler根据 wide dependency划分Stage
 * RDDs 算子: Transformations and Actions, **Spark is lazy**
 * Transformations:
   * Narrow Transformation: map, union, flatmap, filter...
@@ -88,10 +88,6 @@ DataFrame是分布式的Row对象的集合。
 * DataFrame和Dataset API都是基于Spark SQL引擎构建的
 
 #### event loop
-
-#### distinct 原理
-
-reduceByKey
 
 #### 并行度
 
@@ -137,6 +133,8 @@ Shuffle操作包含当前阶段的Shuffle Write（存盘）和下一阶段的Shu
 
 Spark 离线优化，存在笛卡尔积
 
+distinct 底层实现: reduceByKey
+
 #### RDDs vs DataFrames and Datasets
 
 ## Flink
@@ -175,6 +173,18 @@ Spark 离线优化，存在笛卡尔积
 Flink 在运行时主要由 operators 和 streams 两大组件构成。分布式阻塞队列 就是这些逻辑流，队列容量是通过缓冲池（LocalBufferPool）来实现的。
 
 Flink 中的数据传输相当于已经提供了应对反压的机制。因此，Flink 所能获得的最大吞吐量由其 pipeline 中最慢的组件决定。
+
+#### 高可用性
+
+***Spark Checkpoint：***
+
+checkpoint 方法调用前通过都要进行 persists 来把当前 RDD 的数据持久化到内存或磁盘上。
+
+改变了 RDD 的 Lineage。
+
+***Flink Checkpoint：***
+
+checkpoint 原理就是连续绘制分布式的快照，而且非常轻量级，可以连续绘制，并且不会对性能产生太大影响。默认情况下,checkpoint是关闭的。
 
 ## [Redis](https://github.com/CyC2018/CS-Notes/blob/master/notes/Redis.md)
 
@@ -350,7 +360,7 @@ Redis为单进程单线程模式，Redis本身没有锁的概念，Redis对于�
 
 [生产信息不丢失 + 消费信息不重复](https://juejin.im/entry/5ad07b1bf265da23793c9358#sec-1-4)
 
-kafka 提供三种语义的传递：
+Kafka 提供三种语义的传递：
 
 * 至少一次 (at least once) 消息不会丢失 ack=all ，但是可能重复投递
 * 至多一次 (at most once) 消息可能丢失，但是不会重复投递
