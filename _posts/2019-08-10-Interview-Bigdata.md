@@ -56,6 +56,34 @@ Yarn 采用 Master/Slave 结构，整体采用双层调度架构。
   * Wide Transformation: join, reduceByKey, groupByKey, sortByKey...
 * Action: reduce, count, countByKey, collect, first, take, foreach, OutputFunction like saveAsTextFile...
 
+Job：提交给spark的任务。
+Stage：每一个job处理过程要分为的几个阶段。（根据宽依赖划分）
+  
+    一个stage的task的数量：是由输入文件的切片个数来决定的。
+    在HDFS中不大于128m的文件算一个切片（默认128m）。
+    通过算子修改了某一个rdd的分区数量，task数量也会同步修改。
+
+Task：是每一个job处理过程要分几为几次任务。Task是任务运行的最小单位。最终是要以task为单位运行在executor中。
+
+        关系：Job <---> 一个或多个stage <---> 一个或多个task
+
+并行度：
+
+* 理论上：每一个stage下有多少的分区，就有多少的task，task的数量就是我们任务的最大的并行度。
+* 实际上：最大的并行度，取决于我们的application任务运行时使用的executor拥有的cores的数量。
+
+节点：可以起一个或多个Executor。
+Executor：由若干虚拟的core组成，每个Executor的每个core一次只能执行一个Task。
+Partiton：Task执行的结果就是生成了目标RDD的一个partition。
+
+
+#### 与Hadoop MR相比：
+
+* 迭代效率高，Hadoop MR 中间结果都需要落地，io操作影响性能；
+* 容错好，RDD可根据血缘关系找回，MR需要从头计算；
+* mapreduce只提供了map和reduce两种操作，spark 还有Streaming、GraphX；
+* spark框架生态更复杂。
+
 #### RDD,Dataset,Dataframe
 
 ***RDD***
@@ -97,9 +125,8 @@ Spark SQL： spark.sql.shuffle.partitions=[num_tasks]
 
 RDD.repartition：给RDD重新设置partition的数量 [repartitions 或者 coalesce]
 
-#### Shuffle
+#### [Spark Shuffle](https://www.cnblogs.com/arachis/p/Spark_Shuffle.html)
 
-[Spark Shuffle](https://www.cnblogs.com/arachis/p/Spark_Shuffle.html)
 Shuffle是连接map阶段和reduce阶段的桥梁。（宽依赖涉及shuffle操作）
 
 shuffle操作需要将数据进行重新聚合和划分，然后分配到集群的各个节点上进行下一个stage操作，这里会涉及集群不同节点间的大量数据交换。由于不同节点间的数据通过网络进行传输时需要先将数据写入磁盘，因此集群中每个节点均有大量的文件读写操作，从而导致shuffle操作十分耗时。
@@ -135,9 +162,64 @@ Spark 离线优化，存在笛卡尔积
 
 distinct 底层实现: reduceByKey
 
-#### RDDs vs DataFrames and Datasets
-
 ## Flink
+
+#### Window
+
+滚动、滑动、Session、Global Window。
+
+#### Watermark
+
+当Flink中的运算符接收到水印时，它明白（假设）它不会看到比该时间戳更早的消息。
+
+***Flink里的时间类型包括：***
+
+* Event Time：数据本身的产生时间。
+* Ingestion Time：进入Flink系统的时间。
+* Processing Time：被处理的时间。
+
+Event Time是最能反映数据时间属性的，但是Event Time可能会发生延迟或乱序，Flink系统本身只能逐个处理数据，故对于Event Time可能会发生延迟或乱序情况，使用watermark机制结合window来解决。
+
+***WaterMark 的生成：***
+
+用的多的是 Periodic Watermarks：
+
+```Java
+class BoundedOutOfOrdernessGenerator extends AssignerWithPeriodicWatermarks[MyEvent] {
+
+    val maxOutOfOrderness = 3500L; // 3.5 seconds
+
+    var currentMaxTimestamp: Long;
+
+    override def extractTimestamp(element: MyEvent, previousElementTimestamp: Long): Long = {
+        val timestamp = element.getCreationTime()
+        currentMaxTimestamp = max(timestamp, currentMaxTimestamp)
+        timestamp;
+    }
+
+    override def getCurrentWatermark(): Watermark = {
+        // return the watermark as current highest timestamp minus the out-of-orderness bound
+        new Watermark(currentMaxTimestamp - maxOutOfOrderness);
+    }
+}
+```
+
+程序中有一个extractTimestamp方法，就是根据数据本身的Event time来获取；还有一个getCurrentWatermar方法，是用currentMaxTimestamp - maxOutOfOrderness来获取的。
+
+所以 [0,10) 秒的数据会在15秒被watermark触发。
+
+***一般而言，Window的触发需要满足：***
+
+* Event Time < watermark时间（对于late element太多的数据而言）
+
+或者：
+
+1. Watermark时间 >= window_end_time
+2. 在[window_start_time,window_end_time)中有数据存在。
+
+处理乱序：window中可以对input进行按照Event Time排序。
+
+在多并行度的情况下，Windows总是以小的WaterMark时间为标准。
 
 #### [反压](http://wuchong.me/blog/2016/04/26/flink-internals-how-to-handle-backpressure/)
 
@@ -174,17 +256,27 @@ Flink 在运行时主要由 operators 和 streams 两大组件构成。分布式
 
 Flink 中的数据传输相当于已经提供了应对反压的机制。因此，Flink 所能获得的最大吞吐量由其 pipeline 中最慢的组件决定。
 
-#### 高可用性
+#### Checkpoint机制
 
 ***Spark Checkpoint：***
 
-checkpoint 方法调用前通过都要进行 persists 来把当前 RDD 的数据持久化到内存或磁盘上。
+* 在spark core中对RDD做checkpoint，可以切断做checkpoint RDD的依赖关系，将RDD数据保存到可靠存储（如HDFS）以便数据恢复；
+* 在spark streaming中，使用checkpoint用来保存DStreamGraph以及相关配置信息，以便在Driver崩溃重启的时候能够接着之前进度继续进行处理。
+* 核心方法是 `doCheckpoint()`
 
-改变了 RDD 的 Lineage。
+Spark job 的提交执行是异步的，与 checkpoint 操作并不是原子操作。这样的机制会引起数据重复消费问题。
 
-***Flink Checkpoint：***
+***[Flink Checkpoint:](https://www.jianshu.com/p/4d31d6cddc99)***
 
 checkpoint 原理就是连续绘制分布式的快照，而且非常轻量级，可以连续绘制，并且不会对性能产生太大影响。默认情况下,checkpoint是关闭的。
+
+[Flink的容错机制](https://cloud.tencent.com/developer/article/1189624) 的核心部分是制作分布式数据流和操作算子状态的一致性快照。 这些快照充当一致性checkpoint，系统可以在发生故障时回滚。
+
+* Flink分布式快照的核心概念之一是barriers。 这些barriers被注入数据流并与记录一起作为数据流的一部分向下流动。
+* barriers永远不会超过记录，数据流严格有序。
+
+[Barrier对齐:](https://blog.csdn.net/qq475781638/article/details/90737226)
+当一个opeator有多个输入流的时候，checkpoint barrier n 会进行对齐，就是已到达的会先缓存到buffer里等待其他未到达的，一旦所有流都到达，则会向下游广播，exactly-once 就是利用这一特性实现的，at least once 因为不会进行对齐，就会导致有的数据被重复处理。
 
 ## [Redis](https://github.com/CyC2018/CS-Notes/blob/master/notes/Redis.md)
 
@@ -366,7 +458,7 @@ Kafka 提供三种语义的传递：
 * 至多一次 (at most once) 消息可能丢失，但是不会重复投递
 * 精确一次 (Exactly Once) 消息不会丢失，也不会重复
 
-1. 消息发送
+#### 消息发送
 
 Kafka消息发送有两种方式：同步（sync）和异步（async），默认是同步方式，可通过producer.type属性进行配置。
 
@@ -382,9 +474,12 @@ Kafka通过配置request.required.acks属性来确认消息的生产：
 * 同步模式下，确认机制设置为-1，即让消息写入Leader和Follower之后再确认消息发送成功；
 * 异步模式下，为防止缓冲区满，可以在配置文件设置不限制阻塞超时时间，当缓冲区满时让生产者一直处于阻塞状态；
 
-2. 消息消费
+#### 消息消费
 
 * Low-level API：消费者自己维护offset等值，可以实现对Kafka的完全控制；
 * High-level API：封装了对parition和offset的管理，使用简单；
 
 解决：将消息的唯一标识保存到外部介质中，每次消费时判断是否处理过即可。
+
+#### Spark Streaming + Kafka
+
