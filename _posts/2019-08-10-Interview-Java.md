@@ -238,6 +238,10 @@ Java 集合框架主要包括两种类型的容器，一种是集合（Collectio
 
 **[HashMap vs HashTable vs ConCurrentHashMap 对比](https://juejin.im/post/5add97a46fb9a07aa212f4c0)**
 
+**[HashMap扩容机制](https://www.cnblogs.com/yanzige/p/8392142.html)**
+
+**[HashMap的put()方法](https://blog.csdn.net/thetimelyrain/article/details/99873881)**
+
 #### 时间复杂度
 
 ||访问指定元素|查找|插入|删除|
@@ -289,22 +293,30 @@ HashMap 理想情况下查找的时间复杂度为 O(1)：
 
 ## [关键字](http://wiki.jikexueyuan.com/project/java-interview-bible/keyword.html)
 
-**Static**
+***Static***
+
 * 表明一个成员变量或者是成员方法可以在没有所属的类的实例变量的情况下被访问。
 * **static方法** 称作静态方法，由于静态方法不依赖于任何对象就可以进行访问
 * **static变量** 也称作静态变量，静态变量和非静态变量的区别是：静态变量被所有的对象所共享，在内存中只有一个副本，它当且仅当在类初次加载时会被初始化。
 * **static代码块** 可以优化程序性能。static块可以置于类中的任何地方，类中可以有多个static块。在类初次被加载的时候，会按照static块的顺序来执行每个static块，并且**只会执行一次**。
 
-**Final**
+***Final***
+
 * 修饰类：表示该类不能被继承；
   * 父类的private方法会隐式地被指定为final方法。
 * 修饰方法：表示方法不能被重写；
 * 修饰变量：表示变量只能一次赋值以后值不能被修改（常量）。
 
-**Volatile**
+***Volatile***
+
 * 不能保证线程安全
 
-**assertion**
+***[transient](https://www.cnblogs.com/chenpi/p/6185773.html)***
+
+* Java 变量修饰符，如果用transient声明一个实例变量，当对象存储时，它的值不需要维持。transient关键字标记的成员变量不参与序列化过程。
+
+***assertion***
+
 * (断言)在软件开发中是一种常用的调试方式
 
 ## [设计模式](https://www.runoob.com/design-pattern/design-pattern-tutorial.html)
