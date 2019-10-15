@@ -76,8 +76,7 @@ Task：是每一个job处理过程要分几为几次任务。Task是任务运行
 Executor：由若干虚拟的core组成，每个Executor的每个core一次只能执行一个Task。
 Partiton：Task执行的结果就是生成了目标RDD的一个partition。
 
-
-#### 与Hadoop MR相比：
+#### Hadoop MR相比
 
 * 迭代效率高，Hadoop MR 中间结果都需要落地，io操作影响性能；
 * 容错好，RDD可根据血缘关系找回，MR需要从头计算；
@@ -480,6 +479,3 @@ Kafka通过配置request.required.acks属性来确认消息的生产：
 * High-level API：封装了对parition和offset的管理，使用简单；
 
 解决：将消息的唯一标识保存到外部介质中，每次消费时判断是否处理过即可。
-
-#### Spark Streaming + Kafka
-
