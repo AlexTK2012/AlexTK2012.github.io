@@ -127,10 +127,7 @@ threadPool.execute(()->{});
 * 减少了创建和销毁线程的次数，每个工作线程都可以被重复利用，可执行多个任务。
 * 调整线程池中工作线线程的数目，防止因为消耗过多的内存。
 
-<<<<<<< HEAD
-#### 守护线程
-=======
-核心参数：
+#### ThreadPoolExecutor 核心参数
 
 corePoolSize：核心线程数，线程池启动时就会创建的线程数量。即使核心线程是空闲的，也不会被回收，除非调用了allowsCoreThreadTimeOut方法为true。
 
@@ -146,8 +143,7 @@ threadFactory：线程工厂，要实现ThreadFactory接口，线程池创建线
 
 RejectedExecutionHandler：饱和策略。
 
-#### 守护进程
->>>>>>> 663f6dc7cdeea8c7defc9a2747a39c3bde3f7b53
+#### 守护线程
 
 Java中有两类线程：User Thread(用户线程)、Daemon Thread(守护线程) 。
 
@@ -164,7 +160,7 @@ Java中有两类线程：User Thread(用户线程)、Daemon Thread(守护线程)
 调用 wait() 使得线程等待某个条件满足，线程在等待时会被挂起，当其他线程的运行使得这个条件满足时，其它线程会调用 notify() 或者 notifyAll() 来唤醒挂起的线程。
 
 * 只能用在**同步方法或者同步控制块**中使用。
-* notify()或者notifyAll()方法并不是真正释放锁，必须等到synchronized方法或者语法块执行完才真正释放锁；
+* notify()或者notifyAll()方法并不是真正释放锁，必须等到synchronized方法或者语法块执行完才真正释放锁（或者wait释放锁）；
 * 调用notifyAll()方法能够唤醒所有正在等待这个对象的monitor的线程，唤醒的线程获得锁的概率是随机的，取决于cpu调度；
 * **wait 和 sleep 区别**：
   * wait() 是 Object 的方法，而 sleep() 是 Thread 的静态方法；
@@ -239,9 +235,8 @@ java.util.concurrent 包中的Java BlockingQueue 接口表示一个线程安全�
 
 Double-checked Locking (DCL)用来在lazy initialisation 的单例模式中避免同步开销的一个方法。
 
-```Java
-多线程中是不安全的，判断instance是否为空以及新建一个实例都不是原子操作
-
+```JS
+//多线程中是不安全的，判断instance是否为空以及新建一个实例都不是原子操作
 public static Instance getInstance() {
     if(instance == null) {
         instance = new Instance();
@@ -249,15 +244,14 @@ public static Instance getInstance() {
     return instance;
 }
 
-解决：
-1. 用synchronize 给临界区加锁做同步处理（有比较大的性能损耗的）
-
+//解决：
+//1. 用synchronize 给临界区加锁做同步处理（有比较大的性能损耗的）
 public synchronized static Instance getInstance() {}
 
 
-2. 双重检查锁定（double-checked locking):
-可以减少加锁和对象初始化的过程，大大减少了synchronized带来的性能开销
-
+//2. 双重检查锁定（double-checked locking):
+//可以减少加锁和对象初始化的过程，大大减少了synchronized带来的性能开销。
+//但因为JVM的“无序写入”，实际中有问题，不能保证会在单/多处理器上顺利运行
 private static Instance instance;
 public static Instance getInstance() {
     if (instance == null) {
@@ -269,10 +263,8 @@ public static Instance getInstance() {
     return instance;
 }
 
-3. 基于volatile的双重检查锁定的解决方案:
-
+//3. 基于volatile的双重检查锁定的解决方案:
 private volatile static Instance instance;
-
 public static Instance getInstance() {
     if (instance == null) {
         synchronized (DoubleCheckLock.class) {
@@ -283,10 +275,9 @@ public static Instance getInstance() {
     return instance;
 }
 
-4. 基于类初始化的解决方案
-JVM在类的初始化阶段（即在Class被加载后，且被线程使用之前），会执行类的初始化。
-在执行类的初始化期间，JVM会去获取一个锁，这个锁可以同步多个线程对同一个类的初始化。
-
+//4. 基于类初始化的解决方案
+//JVM在类的初始化阶段（即在Class被加载后，且被线程使用之前），会执行类的初始化。
+//在执行类的初始化期间，JVM会去获取一个锁，这个锁可以同步多个线程对同一个类的初始化。
 public class InstanceFactory {
     private static class InstanceHolder {
         public static Instance instance = new Instance();
@@ -311,18 +302,18 @@ Exception（异常）:是程序本身可以处理的异常。包括运行时异�
 ## 并发 CAS
 
 [CAS 原理剖析](https://juejin.im/post/5a73cbbff265da4e807783f5)
+
 [并发编程之 CAS 的原理](https://juejin.im/post/5ae753d8f265da0ba56753ca)
+
 [Java并发编程：volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
 
-<<<<<<< HEAD
 ## 反射
-=======
-## 反射
->>>>>>> 663f6dc7cdeea8c7defc9a2747a39c3bde3f7b53
 
 通过一个对象获得完整的包名和类名
-testReflect.getClass().getName()
 
+```java
+testReflect.getClass().getName()
 Class<?> clazz = Class.forName("net.xsoftlab.baike.TestReflect");
 Field[] field = clazz.getDeclaredFields();
 Method method[] = clazz.getMethods();
+```
