@@ -66,6 +66,10 @@ tags:                                       # 标签，可多个
 
 根据数据库的功能，可以在数据库设计器中创建三种索引：唯一索引、主键索引和聚集索引。
 
+## [存储引擎](https://blog.csdn.net/weixin_41459547/article/details/87929431)
+
+MySQL默认是InnoDB
+
 ## 视图
 
 视图（view）是一种虚拟存在的表，是一个逻辑表，本身并不包含数据。作为一个select语句保存在数据字典中的。视图主要用于简化检索，保护数据，并不用于更新，而且大部分视图都不可以更新。
@@ -83,3 +87,27 @@ tags:                                       # 标签，可多个
 
 [分布式事务](https://juejin.im/post/5b5a0bf9f265da0f6523913b)
 解决：2PC、TCC、本地消息表、MQ、Saga
+
+## 查看SQL执行慢
+
+[分析执行SQL的效率](https://blog.csdn.net/zheng0518/article/details/51675274)
+
+捕获低效SQL语句:
+
+1. slow_query_log
+这个参数设置为ON，可以捕获执行时间超过一定数值的SQL语句。
+
+2. long_query_time
+当SQL语句执行时间超过此数值时，就会被记录到日志中，建议设置为1或者更短。
+
+3. slow_query_log_file  
+记录日志的文件名。
+
+4. log_queries_not_using_indexes
+这个参数设置为ON，可以捕获到所有未使用索引的SQL语句，尽管这个SQL语句有可能执行得挺快。
+
+检测mysql中sql语句的效率的方法:
+
+1. 通过查询日志.
+2. show processlist 命令, 显示哪些线程正在运行.
+3. explain来了解SQL执行的状态.

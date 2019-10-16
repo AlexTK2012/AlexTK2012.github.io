@@ -13,15 +13,18 @@ tags:                                       # 标签，可多个
 
 ## Spring依赖注入
 
-XML中配置：
+三种IOC方式:
 
-* ***属性注入***
+**属性注入**
 通过setXXX()方法注入Bean的属性值或者依赖对象，最常用。
-  * Spring首先会调用bean的默认构造函数实例化bean对象，然后再通过反射的方法来调用set方法来注入属性值。
-  * 属性注入要求bean提供一个默认的构造函数,并且得为需要注入的属性提供set方法
-* ***构造函数注入***
+
+* Spring首先会调用bean的默认构造函数实例化bean对象，然后再通过反射的方法来调用set方法来注入属性值。
+* 属性注入要求bean提供一个默认的构造函数,并且得为需要注入的属性提供set方法
+
+**构造函数注入**
 使用构造函数注入的前提是：bean必须提供带参的构造函数。
-* ***工厂方法注入***
+
+**工厂方法注入**
 注解的方式注入 @Autowired,@Resource,@Required。
 
 ## [Spring中的IOC和AOP](https://juejin.im/post/5a1cd072f265da432240ef18)
@@ -45,3 +48,8 @@ AOP: 面向切面编程。（Aspect-Oriented Programming）
 * 实现AOP的技术，主要分为两大类：
   * 一是采用动态代理技术，利用截取消息的方式，对该消息进行装饰，以取代原有对象行为的执行；
   * 二是采用静态织入的方式，引入特定的语法创建“方面”，从而使得编译器可以在编译期间织入有关“方面”的代码.
+
+[参考](https://blog.csdn.net/baidu_20876831/article/details/78956220)
+
+## [Spring MVC 工作流程](https://blog.csdn.net/qq_36761831/article/details/89053314)
+

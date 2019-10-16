@@ -182,7 +182,15 @@ java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协
 * 管道通信
   * 使用java.io.PipedInputStream 和 java.io.PipedOutputStream进行通信
 
-#### 监视器和锁
+#### [cyclicbarrier和countdownlatch](https://cloud.tencent.com/developer/article/1120907)
+
+java.util.concurrent 包下的两个线程同步组件CountDownLatch和CyclicBarrier。
+
+CountDownLatch 允许一个或一组线程等待其他线程完成后再恢复运行。线程可通过调用await方法进入等待状态，在其他线程调用countDown方法将计数器减为0后，处于等待状态的线程即可恢复运行。
+
+CyclicBarrier （可循环使用的屏障）则与此不同，CyclicBarrier 允许一组线程到达屏障后阻塞住，直到最后一个线程进入到达屏障，所有线程才恢复运行。
+
+主要的区别在于唤醒等待线程的时机。CountDownLatch 是在计数器减为0后，唤醒等待线程。CyclicBarrier 是在计数器（等待线程数）增长到指定数量后，再唤醒等待线程。
 
 #### 互斥与同步
 

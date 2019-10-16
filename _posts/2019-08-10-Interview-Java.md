@@ -62,7 +62,7 @@ tags:                                       # 标签，可多个
 * 依赖倒置原则（Dependecy-Inversion Principle）：传统的结构化编程中，最上层的模块通常都要依赖下面的子模块来实现，所以DIP原则就是要逆转这种依赖关系。(B抽象类,A实现)
 * 接口隔离原则(Interface-Segregation Principle)：模块间要通过抽象接口隔离开，而不是通过具体的类强耦合起来
 
-## 基本数据类型和复杂数据类型
+#### 基本数据类型
 
 java.lang包的八个类在java中称为包装类，包装类可用于实现多态性。
 
@@ -70,6 +70,9 @@ java.lang包的八个类在java中称为包装类，包装类可用于实现多�
 |--|--|
 |基本类型，直接存数值|对象，用一个引用指向这个对象|
 |初始化为0|初始化为null|
+
+***[String、StringBuilder、StringBuffer实现原理](https://www.jianshu.com/p/64519f1b1137)***
+
 
 ## 抽象类和接口
 
@@ -311,6 +314,8 @@ HashMap 理想情况下查找的时间复杂度为 O(1)：
 ***Volatile***
 
 * 不能保证线程安全
+* 不保证原子性，但会保证内存可见
+* 修饰的字段不会进行指令重排
 
 ***[transient](https://www.cnblogs.com/chenpi/p/6185773.html)***
 

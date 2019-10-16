@@ -23,6 +23,14 @@ NameNode 主备切换主要由 ZKFailoverController、HealthMonitor 和 ActiveSt
 ***主备切换流程***
 ![switch](/img/in-post/post-interview/HDSF-HA-switch.png)
 
+#### 写入过程
+
+[HDFS文件读写过程](https://www.cnblogs.com/whoyoung/p/11195698.html)
+
+#### Hive 特点
+
+HQL, MapReduce [参考](https://www.jianshu.com/p/d848ee7806ab)
+
 ## Yarn
 
 #### Yarn 二次调度
@@ -59,7 +67,7 @@ Yarn 采用 Master/Slave 结构，整体采用双层调度架构。
 Job：提交给spark的任务。
 Stage：每一个job处理过程要分为的几个阶段。（根据宽依赖划分）
   
-    一个stage的task的数量：是由输入文件的切片个数来决定的。
+    stage里的task的数量由输入文件的切片个数来决定的。
     在HDFS中不大于128m的文件算一个切片（默认128m）。
     通过算子修改了某一个rdd的分区数量，task数量也会同步修改。
 
@@ -72,17 +80,39 @@ Task：是每一个job处理过程要分几为几次任务。Task是任务运行
 * 理论上：每一个stage下有多少的分区，就有多少的task，task的数量就是我们任务的最大的并行度。
 * 实际上：最大的并行度，取决于我们的application任务运行时使用的executor拥有的cores的数量。
 
-节点：可以起一个或多个Executor。
+container 节点：可以起一个或多个Executor。
 Executor：由若干虚拟的core组成，每个Executor的每个core一次只能执行一个Task。
 Partiton：Task执行的结果就是生成了目标RDD的一个partition。
 
+#### 与Hadoop MR相比
 
-#### 与Hadoop MR相比：
+[Hadoop MapReduce 工作流程](https://waltyou.github.io/Hadoop-MapReduce-Workflow/)
 
 * 迭代效率高，Hadoop MR 中间结果都需要落地，io操作影响性能；
 * 容错好，RDD可根据血缘关系找回，MR需要从头计算；
 * mapreduce只提供了map和reduce两种操作，spark 还有Streaming、GraphX；
 * spark框架生态更复杂。
+
+[MR的Shuffle机制](https://blog.csdn.net/ASN_forever/article/details/81233547)
+
+Shuffle阶段是指从Map的输出开始，包括系统执行排序以及传送Map输出到Reduce作为输入的过程。
+Sort阶段是指对Map端输出的Key进行排序的过程。不同的Map可能输出相同的Key，相同的Key必须发送到同一个Reduce端处理。
+Shuffle阶段可以分为Map端的Shuffle和Reduce端的Shuffle。
+
+Map 端Shuffle： 分区partition => 写入环形缓冲区 => 执行溢出写 => 归并merge
+Reduce 端Shuffle： 复制copy => 归并merge => reduce
+
+#### [运行流程](https://blog.csdn.net/xgjianstart/article/details/65441512)
+
+1. 构建Spark Application的运行环境（启动SparkContext），SparkContext向资源管理器（可以是Standalone、Mesos或YARN）注册并申请运行Executor资源；
+2. 资源管理器分配Executor资源并启动StandaloneExecutorBackend，Executor运行情况将随着心跳发送到资源管理器上； 
+3. SparkContext构建成DAG图，将DAG图分解成Stage，并把Taskset发送给Task Scheduler。Executor向SparkContext申请Task，Task Scheduler将Task发放给Executor运行同时SparkContext将应用程序代码发放给Executor。
+4. Task在Executor上运行，运行完毕释放所有资源。
+
+***[spark on yarn cluster 与 client 模式的区别](https://www.iteblog.com/archives/1223.html)***
+
+区别其实就是Application Master进程的区别，yarn-cluster模式下，driver运行在AM(Application Master)中，它负责向YARN申请资源，并监督作业的运行状况。当用户提交了作业之后，就可以关掉Client，作业会继续在YARN上运行。
+而yarn-client模式下，Application Master仅仅向YARN请求executor，client会和请求的container通信来调度他们工作，也就是说Client不能离开。
 
 #### RDD,Dataset,Dataframe
 
@@ -115,7 +145,9 @@ DataFrame是分布式的Row对象的集合。
 * DataFrame = Dataset[Row], Dataset每一个record存储的是一个强类型值而不是一个Row。
 * DataFrame和Dataset API都是基于Spark SQL引擎构建的
 
-#### event loop
+#### Spark on Yarn
+
+[架构解析](https://cloud.tencent.com/developer/article/1330107)
 
 #### 并行度
 
@@ -132,6 +164,8 @@ Shuffle是连接map阶段和reduce阶段的桥梁。（宽依赖涉及shuffle操
 shuffle操作需要将数据进行重新聚合和划分，然后分配到集群的各个节点上进行下一个stage操作，这里会涉及集群不同节点间的大量数据交换。由于不同节点间的数据通过网络进行传输时需要先将数据写入磁盘，因此集群中每个节点均有大量的文件读写操作，从而导致shuffle操作十分耗时。
 
 Shuffle操作包含当前阶段的Shuffle Write（存盘）和下一阶段的Shuffle Read（fetch）,两种模式的主要差异是在Shuffle Write阶段
+
+spark RDD中的shuffle算子：去重distinct()、聚合reduceByKey()、排序sortByKey()、重分区repartition()等
 
 #### 数据倾斜
 
@@ -481,5 +515,64 @@ Kafka通过配置request.required.acks属性来确认消息的生产：
 
 解决：将消息的唯一标识保存到外部介质中，每次消费时判断是否处理过即可。
 
-#### Spark Streaming + Kafka
+#### [高吞吐量](https://www.cnblogs.com/barrywxx/p/11544379.html)
 
+[参考](http://www.jasongj.com/kafka/high_throughput/)
+
+***顺序读写***
+
+顺序追加到文件尾。
+Memory Mapped Files：利用操作系统的Page实现文件到物理内存的映射，提高了IO速率，不用在用户空间到内存空间的复制。（缺点:不可靠）
+
+***Zero Copy***
+Linux内核sendfile系统调用，提供了零拷贝。
+
+#### [Replication](https://blog.csdn.net/lizhitao/article/details/52296102)
+
+[参考](https://blog.csdn.net/wingofeagle/article/details/60966001)
+
+Kafka的消息安全性与容灾机制主要是通过副本replication的设置和leader／follower的的机制实现的。
+
+Kafka 每个partition都有一个唯一的leader，所有的读写操作都在leader上完成，leader批量从leader上pull数据。一般情况下partition的数量大于等于broker的数量，并且所有partition的leader均匀分布在broker上。follower上的日志和其leader上的完全一样。
+
+Kakfa处理失败需要明确定义一个broker是否alive。对于Kafka而言，Kafka存活包含两个条件：
+
+1. 它必须维护与Zookeeper的session(这个通过Zookeeper的heartbeat机制来实现)
+2. follower必须能够及时将leader的writing复制过来，不能“落后太多”
+
+leader会track “in sync”的node list（ISR）。如果一个follower宕机，或者落后太多，leader将把它从”in sync” list中移除。
+
+**对于Consumer而言：**
+list里的所有follower都从leader复制过去才会被认为已提交。这样就避免了部分数据被写进了leader，还没来得及被任何follower复制就宕机了，而造成数据丢失（consumer无法消费这些数据）。
+
+**而对于producer而言：**
+它可以选择是否等待消息commit，这可以通过request.required.acks来设置。这种机制确保了只要“in sync” list有一个或以上的flollower，一条被commit的消息就不会丢失。
+
+**leader 选举机制**
+Kafka在Zookeeper中动态维护了一个ISR（in-sync replicas） set，这个set里的所有replica都跟上了leader，只有ISR里的成员才有被选为leader的可能。
+
+[Zookeeper保证一致性](http://www.bnee.net/article/2497.html) Zab 协议类似于 Paxos 协议，并且提供了强一致性。
+
+#### 副本同步机制
+
+[副本同步](https://www.cnblogs.com/senlinyang/p/8118491.html)
+
+[多机房数据一致性问题](https://blog.csdn.net/douliw/article/details/60307846):(跨城市容灾)
+
+MirrorMaker 工具：Kafka 官方提供的跨数据中心的流数据同步方案。其实现原理，其实就是通过从Source Cluster消费消息然后将消息生产到Target Cluster，即普通的消息生产和消费。用户只要通过简单的consumer配置和producer配置，然后启动Mirror，就可以实现准实时的数据同步。
+
+#### 消息中间件
+
+[Kafka、RabbitMQ等](https://blog.csdn.net/u013256816/article/details/79838428)
+
+## 容灾
+
+[腾讯云高可用和容灾解决方案](https://cloud.tencent.com/developer/article/1058500)
+
+[云化数据中心容灾](https://cloud.tencent.com/developer/article/1484621)
+
+[同城双机房架构剖析](https://yq.aliyun.com/articles/74424)
+
+[“异地多活” 设计](https://juejin.im/entry/57ec7e43bf22ec00643d5b6a)
+
+[饿了么异地多活技术实现](https://zhuanlan.zhihu.com/p/34958596)
