@@ -192,10 +192,13 @@ CyclicBarrier （可循环使用的屏障）则与此不同，CyclicBarrier 允�
 
 主要的区别在于唤醒等待线程的时机。CountDownLatch 是在计数器减为0后，唤醒等待线程。CyclicBarrier 是在计数器（等待线程数）增长到指定数量后，再唤醒等待线程。
 
-#### 互斥与同步
+#### ReentrantLock
 
-synchronized
-ReentrantLock
+[AbstractQueuedSynchronizer简介](https://ddnd.cn/2019/03/15/java-abstractqueuedsynchronizer/)
+
+[ReentrantLock的实现原理](https://juejin.im/post/5c95df97e51d4551d06d8e8e#heading-13)
+
+*Synchronized 通过JVM 实现*
 
 #### volatile 与 synchronized
 
