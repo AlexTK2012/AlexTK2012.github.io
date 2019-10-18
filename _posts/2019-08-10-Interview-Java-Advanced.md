@@ -182,6 +182,14 @@ java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协
 * 管道通信
   * 使用java.io.PipedInputStream 和 java.io.PipedOutputStream进行通信
 
+#### ReentrantLock
+
+[AbstractQueuedSynchronizer简介](https://ddnd.cn/2019/03/15/java-abstractqueuedsynchronizer/)
+
+[ReentrantLock的实现原理](https://juejin.im/post/5c95df97e51d4551d06d8e8e#heading-13)
+
+Synchronized 通过JVM 实现.
+
 #### [cyclicbarrier和countdownlatch](https://cloud.tencent.com/developer/article/1120907)
 
 java.util.concurrent 包下的两个线程同步组件CountDownLatch和CyclicBarrier。
@@ -191,14 +199,6 @@ CountDownLatch 允许一个或一组线程等待其他线程完成后再恢复�
 CyclicBarrier （可循环使用的屏障）则与此不同，CyclicBarrier 允许一组线程到达屏障后阻塞住，直到最后一个线程进入到达屏障，所有线程才恢复运行。
 
 主要的区别在于唤醒等待线程的时机。CountDownLatch 是在计数器减为0后，唤醒等待线程。CyclicBarrier 是在计数器（等待线程数）增长到指定数量后，再唤醒等待线程。
-
-#### ReentrantLock
-
-[AbstractQueuedSynchronizer简介](https://ddnd.cn/2019/03/15/java-abstractqueuedsynchronizer/)
-
-[ReentrantLock的实现原理](https://juejin.im/post/5c95df97e51d4551d06d8e8e#heading-13)
-
-*Synchronized 通过JVM 实现*
 
 #### volatile 与 synchronized
 
