@@ -81,7 +81,9 @@ Task：是每一个job处理过程要分几为几次任务。Task是任务运行
 * 实际上：最大的并行度，取决于我们的application任务运行时使用的executor拥有的cores的数量。
 
 container 节点：可以起一个或多个Executor。
+
 Executor：由若干虚拟的core组成，每个Executor的每个core一次只能执行一个Task。
+
 Partiton：Task执行的结果就是生成了目标RDD的一个partition。
 
 #### 与Hadoop MR相比
@@ -96,10 +98,13 @@ Partiton：Task执行的结果就是生成了目标RDD的一个partition。
 [MR的Shuffle机制](https://blog.csdn.net/ASN_forever/article/details/81233547)
 
 Shuffle阶段是指从Map的输出开始，包括系统执行排序以及传送Map输出到Reduce作为输入的过程。
+
 Sort阶段是指对Map端输出的Key进行排序的过程。不同的Map可能输出相同的Key，相同的Key必须发送到同一个Reduce端处理。
+
 Shuffle阶段可以分为Map端的Shuffle和Reduce端的Shuffle。
 
 Map 端Shuffle： 分区partition => 写入环形缓冲区 => 执行溢出写 => 归并merge
+
 Reduce 端Shuffle： 复制copy => 归并merge => reduce
 
 #### [运行流程](https://blog.csdn.net/xgjianstart/article/details/65441512)
