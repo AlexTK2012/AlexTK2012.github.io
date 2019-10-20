@@ -300,6 +300,7 @@ public class InstanceFactory {
     }
 }
 ```
+
 ## 并发 CAS
 
 [CAS 原理剖析](https://juejin.im/post/5a73cbbff265da4e807783f5)
