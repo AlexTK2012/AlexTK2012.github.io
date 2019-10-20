@@ -297,6 +297,13 @@ public class InstanceFactory {
     }
 }
 ```
+## 并发 CAS
+
+[CAS 原理剖析](https://juejin.im/post/5a73cbbff265da4e807783f5)
+
+[并发编程之 CAS 的原理](https://juejin.im/post/5ae753d8f265da0ba56753ca)
+
+[Java并发编程：volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
 
 ## [Error与异常](https://blog.csdn.net/iblade/article/details/78196016)
 
@@ -305,14 +312,6 @@ Throwable： 有两个重要的子类：Exception（异常）和 Error（错误�
 Error（错误）:是程序无法处理的错误，表示运行应用程序中较严重问题。大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM（Java 虚拟机）出现的问题。比如：OutOfMemoryError, StackOverFlowError.
 
 Exception（异常）:是程序本身可以处理的异常。包括运行时异常和非运行时异常(编译异常)。
-
-## 并发 CAS
-
-[CAS 原理剖析](https://juejin.im/post/5a73cbbff265da4e807783f5)
-
-[并发编程之 CAS 的原理](https://juejin.im/post/5ae753d8f265da0ba56753ca)
-
-[Java并发编程：volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
 
 ## 反射
 
