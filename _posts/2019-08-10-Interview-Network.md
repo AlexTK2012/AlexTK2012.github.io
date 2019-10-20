@@ -100,3 +100,8 @@ session与cookie的区别
 （3）我们可以轻松访问cookie值但是我们无法轻松访问会话值，因此它更安全
 （4）设置cookie时间可以使cookie过期。但是使用session-destory（），我们将会销毁会话。
 总结：如果我们需要经常登录一个站点时，最好用cookie来保存信息，要不然每次登陆都特别麻烦，如果对于需要安全性高的站点以及控制数据的能力时需要用会话效果更佳，当然我们也可以结合两者，使网站按照我们的想法进行运行
+
+#### select、epoll、poll区别
+
+[参考](https://www.cnblogs.com/anker/p/3265058.html)
+

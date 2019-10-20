@@ -525,7 +525,19 @@ Kafka通过配置request.required.acks属性来确认消息的生产：
 Memory Mapped Files：利用操作系统的Page实现文件到物理内存的映射，提高了IO速率，不用在用户空间到内存空间的复制。（缺点:不可靠）
 
 ***Zero Copy***
-Linux内核sendfile系统调用，提供了零拷贝。
+
+[正常模式](https://blog.csdn.net/u013256816/article/details/52589524)，经历4次copy的过程：
+
+1. 调用read时，文件A拷贝到了kernel模式；
+2. CPU控制将kernel模式数据copy到user模式下；
+3. 调用write时，先将user模式下的内容copy到kernel模式下的socket的buffer中；
+4. 将kernel模式下的socket buffer的数据copy到网卡设备中传送；
+
+Linux内核sendfile系统调用，提供了零拷贝。Zero-Copy来请求kernel直接把disk的data传输给socket, Linux2.4内核对sendfile改进版:
+
+1. 将文件拷贝到kernel buffer中；
+2. 向socket buffer中追加当前要发生的数据在kernel buffer中的位置和偏移量；
+3. 根据socket buffer中的位置和偏移量直接将kernel buffer的数据copy到网卡设备（protocol engine）中.
 
 #### [Replication](https://blog.csdn.net/lizhitao/article/details/52296102)
 
@@ -576,3 +588,13 @@ MirrorMaker 工具：Kafka 官方提供的跨数据中心的流数据同步方�
 [“异地多活” 设计](https://juejin.im/entry/57ec7e43bf22ec00643d5b6a)
 
 [饿了么异地多活技术实现](https://zhuanlan.zhihu.com/p/34958596)
+
+## 分布式锁
+
+***[Redis or Zookeeper](https://zhuanlan.zhihu.com/p/73807097)***
+
+[分布式锁的几种使用方式（redis、zookeeper、数据库)](https://blog.csdn.net/u010963948/article/details/79006572)
+
+***[分布式数据一致性](https://cloud.tencent.com/developer/article/1041507)***
+
+[海量数据处理](https://blog.csdn.net/v_JULY_v/article/details/6279498) 基本都是分治的思想。

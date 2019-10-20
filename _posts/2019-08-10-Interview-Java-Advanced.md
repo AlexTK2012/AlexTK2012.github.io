@@ -165,6 +165,7 @@ Java中有两类线程：User Thread(用户线程)、Daemon Thread(守护线程)
 * **wait 和 sleep 区别**：
   * wait() 是 Object 的方法，而 sleep() 是 Thread 的静态方法；
   * wait() 会释放锁，sleep() 不会；
+* Thread.yield()：使用yield()的目的是让相同优先级的线程之间能适当的轮转执行。但是，实际中无法保证yield()达到让步目的，因为让步的线程还有可能被线程调度程序再次选中。
 
 ***await & signal & signalAll***
 java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协调，可以在 Condition 上调用 await() 方法使线程等待，其它线程调用 signal() 或 signalAll() 方法唤醒等待的线程。
@@ -304,8 +305,6 @@ Throwable： 有两个重要的子类：Exception（异常）和 Error（错误�
 Error（错误）:是程序无法处理的错误，表示运行应用程序中较严重问题。大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM（Java 虚拟机）出现的问题。比如：OutOfMemoryError, StackOverFlowError.
 
 Exception（异常）:是程序本身可以处理的异常。包括运行时异常和非运行时异常(编译异常)。
-
-## IO & NIO
 
 ## 并发 CAS
 
