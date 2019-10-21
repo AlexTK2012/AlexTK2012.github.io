@@ -164,6 +164,8 @@ RDD.repartition：给RDD重新设置partition的数量 [repartitions 或者 coal
 
 #### [Spark Shuffle](https://www.cnblogs.com/arachis/p/Spark_Shuffle.html)
 
+***[shuffle 过程](https://zhuanlan.zhihu.com/p/70331869)***
+
 Shuffle是连接map阶段和reduce阶段的桥梁。（宽依赖涉及shuffle操作）
 
 shuffle操作需要将数据进行重新聚合和划分，然后分配到集群的各个节点上进行下一个stage操作，这里会涉及集群不同节点间的大量数据交换。由于不同节点间的数据通过网络进行传输时需要先将数据写入磁盘，因此集群中每个节点均有大量的文件读写操作，从而导致shuffle操作十分耗时。
@@ -171,6 +173,18 @@ shuffle操作需要将数据进行重新聚合和划分，然后分配到集群�
 Shuffle操作包含当前阶段的Shuffle Write（存盘）和下一阶段的Shuffle Read（fetch）,两种模式的主要差异是在Shuffle Write阶段
 
 spark RDD中的shuffle算子：去重distinct()、聚合reduceByKey()、排序sortByKey()、重分区repartition()等
+
+HashShuffle
+
+* 产生的磁盘小文件的个数：M（map task的个数）*R（reduce task的个数）
+* 优化后: C（core的个数）*R（reduce的个数）
+
+SortShuffle
+
+* 产生的磁盘的小文件为：2*M（map task的个数）
+* reduce task去map端拉取数据的时候，首先解析索引文件，根据索引文件再去拉取对应的数据
+* bypass机制
+
 
 #### 数据倾斜
 

@@ -155,7 +155,10 @@ JVM的内存主要包括3大块：堆(heap)、栈(stack)（虚拟机栈和本地
 
 #### 垃圾回收器(GC)
 
-略
+* 计数器算法
+* 标记-清除算法
+* 标记-整理算法
+* copy算法
 
 #### 垃圾回收函数
 
@@ -239,6 +242,10 @@ Java 集合框架主要包括两种类型的容器，一种是集合（Collectio
 * WeakHashMap: 类似HashMap，对key实行“弱引用”，如果一个key不再被外部所引用，那么该key可以被GC回收。
 * IdentityHashMap
 * EnumMap
+
+HashMap 的扩容机制很巧妙，[参考](https://tech.meituan.com/2016/06/24/java-hashmap.html)
+
+不需要像JDK1.7的实现那样重新计算hash，只需要看看原来的hash值新增的那个bit是1还是0就好了，是0的话索引没变，是1的话索引变成“原索引+oldCap”.
 
 **[HashMap vs HashTable vs ConCurrentHashMap 对比](https://juejin.im/post/5add97a46fb9a07aa212f4c0)**
 
