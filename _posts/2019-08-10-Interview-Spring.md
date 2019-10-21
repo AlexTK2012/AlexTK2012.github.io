@@ -53,5 +53,6 @@ AOP: 面向切面编程。（Aspect-Oriented Programming）
 
 ## [Spring MVC 工作流程](https://blog.csdn.net/qq_36761831/article/details/89053314)
 
-## Spring Security 鉴权机制
+## Spring Security
 
+[认证流程](https://blog.csdn.net/u013435893/article/details/79605239)
