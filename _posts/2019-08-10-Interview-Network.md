@@ -57,11 +57,17 @@ https://www.cnblogs.com/fanzhidongyzby/archive/2013/08/10/3250405.html)
 
 上层协议数据通过**封装**转变为下层协议数据，加上自己的头部信息（链路层还会加上尾部信息）。
 
-#### TCP&UDP
+#### [TCP&UDP](https://blog.csdn.net/lzj2504476514/article/details/81454754)
 
-TCP协议提供面向连接、字节流和可靠的传输。TCP协议进行通信的双方必须先建立连接，然后才能开始传输数据。TCP连接是全双工的，也就是说双方的数据读写可以通过一个连接进行。
+***TCP***
 
-需要进行三次握手，四次挥手： https://blog.csdn.net/whuslei/article/details/6667471
+TCP协议提供面向连接、字节流和可靠的传输。
+
+TCP协议进行通信的双方必须先建立连接，然后才能开始传输数据。TCP连接是全双工的，也就是说双方的数据读写可以通过一个连接进行。
+
+需要进行 [三次握手，四次挥手](https://blog.csdn.net/whuslei/article/details/6667471)。
+
+[为什么要三次握手](https://blog.csdn.net/to_be_better/article/details/54885684)
 
 三次握手：
 
@@ -76,6 +82,23 @@ TCP协议提供面向连接、字节流和可靠的传输。TCP协议进行通�
 3. server 发 FIN
 4. client 回 ACK， client 进入Time-Wait状态，server 收到ACK后进入Close状态
 
+***UDP（User Data Protocol，用户数据报协议）***
+
+UDP是一个非连接的协议，传输数据之前源端和终端不建立连接，因此也就不需要维护连接状态，包括收发状态等，因此一台服务机可同时向多个客户机传输相同的消息。
+
+UDP信息包的标题很短，只有8个字节，相对于TCP的20个字节信息包的额外开销很小。
+
+***主要区别***
+
+* TCP是可靠传输,UDP是不可靠传输;
+* TCP面向连接,UDP无连接;
+* TCP传输数据有序,UDP不保证数据的有序性;
+* TCP不保存数据边界,UDP保留数据边界;
+* TCP传输速度相对UDP较慢;
+* TCP有流量控制和拥塞控制,UDP没有;
+* TCP是重量级协议,UDP是轻量级协议;
+* TCP首部较长20字节,UDP首部较短8字节;
+
 #### [HTTP 协议](https://www.runoob.com/http/http-messages.html)
 
 HTTP协议是构建在TCP/IP协议之上的，是TCP/IP协议的一个子集
@@ -85,6 +108,20 @@ HTTP是基于客户端/服务端（C/S）的架构模型，通过一个可靠的
 请求方法：Get、Post、Head、OPTIONS、PUT、PATCH、DELETE、TRACE 和 CONNECT。
 
 ***[HTTP 与 RPC协议](https://www.zhihu.com/question/41609070)***
+
+#### [HTTP 报文](https://www.jianshu.com/p/8f61c95c078d)
+
+HTTP 报文包括：起始行，首部字段，主体。
+
+## [SSL/TLS 协议](https://www.ruanyifeng.com/blog/2014/02/ssl_tls.html)
+
+SSL/TLS 握手是为了安全地协商出一份对称加密的秘钥，用处：
+
+* 所有信息都是加密传播，第三方无法窃听。
+* 具有校验机制，一旦被篡改，通信双方会立刻发现。
+* 配备身份证书，防止身份被冒充。
+
+[基于RSA 的握手](https://razeencheng.com/post/ssl-handshake-detail.html)
 
 ## Cookie和Session
 
@@ -104,4 +141,3 @@ session与cookie的区别
 #### select、epoll、poll区别
 
 [参考](https://www.cnblogs.com/anker/p/3265058.html)
-

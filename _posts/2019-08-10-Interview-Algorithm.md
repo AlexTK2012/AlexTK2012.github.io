@@ -9,6 +9,8 @@ tags:                                       # 标签，可多个
     - Interview
 ---
 
+刷 LeetCode 吧，没啥好说的。
+
 ## 树
 
 #### [二叉树](https://blog.csdn.net/google19890102/article/details/53926704)

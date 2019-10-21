@@ -183,13 +183,29 @@ java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协
 * 管道通信
   * 使用java.io.PipedInputStream 和 java.io.PipedOutputStream进行通信
 
-#### ReentrantLock
+#### [锁](https://tech.meituan.com/2018/11/15/java-lock.html)
+
+Java 锁种类: 悲观/乐观锁，公平/非公平锁，自旋锁/适应性自旋锁，可重入/非可重入锁，排他/共享锁，无锁/偏向锁/轻量级锁/重量级锁。
+
+* java.util.concurrent包中的原子类就是通过CAS来实现了乐观锁;
+* synchronized 这种独占锁属于悲观锁;
+* 公平锁是指多个线程按照申请锁的顺序来获取锁，线程直接进入队列中排队，队列中的第一个线程才能获得锁。公平锁的优点是等待锁的线程不会饿死;
+* ReentrantReadWriteLock.ReadLock 是共享锁，WriteLock 是排他锁;
+* Synchronized 通过Monitor来实现线程同步，本质是每个对象都有个monitor，Monitor是依赖于底层的操作系统的Mutex Lock（互斥锁）来实现的线程同步。
 
 [AbstractQueuedSynchronizer简介](https://ddnd.cn/2019/03/15/java-abstractqueuedsynchronizer/)
 
 [ReentrantLock的实现原理](https://juejin.im/post/5c95df97e51d4551d06d8e8e#heading-13)
 
-Synchronized 通过JVM 实现.
+##### 并发 CAS
+
+[CAS 原理剖析](https://juejin.im/post/5a73cbbff265da4e807783f5)
+
+compareAndSwapInt（var1, var2, var5, var5 + var4）其实换成compareAndSwapInt（obj, offset, expect, update）比较清楚，意思就是如果obj内的value和expect相等，就证明没有其他线程改变过这个变量，那么就更新它为update，如果这一步的CAS没有成功，那就采用自旋的方式继续进行CAS操作，取出乍一看这也是两个步骤了啊，其实在JNI里是借助于一个CPU指令完成的。所以还是原子操作.
+
+[并发编程之 CAS 的原理](https://juejin.im/post/5ae753d8f265da0ba56753ca)
+
+[Java并发编程：volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
 
 #### [cyclicbarrier和countdownlatch](https://cloud.tencent.com/developer/article/1120907)
 
@@ -300,14 +316,6 @@ public class InstanceFactory {
     }
 }
 ```
-
-## 并发 CAS
-
-[CAS 原理剖析](https://juejin.im/post/5a73cbbff265da4e807783f5)
-
-[并发编程之 CAS 的原理](https://juejin.im/post/5ae753d8f265da0ba56753ca)
-
-[Java并发编程：volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
 
 ## [Error与异常](https://blog.csdn.net/iblade/article/details/78196016)
 
