@@ -201,11 +201,9 @@ Java 锁种类: 悲观/乐观锁，公平/非公平锁，自旋锁/适应性自�
 
 [CAS 原理剖析](https://juejin.im/post/5a73cbbff265da4e807783f5)
 
-compareAndSwapInt（var1, var2, var5, var5 + var4）其实换成compareAndSwapInt（obj, offset, expect, update）比较清楚，意思就是如果obj内的value和expect相等，就证明没有其他线程改变过这个变量，那么就更新它为update，如果这一步的CAS没有成功，那就采用自旋的方式继续进行CAS操作，取出乍一看这也是两个步骤了啊，其实在JNI里是借助于一个CPU指令完成的。所以还是原子操作.
+CompareAndSwapInt（var1, var2, var5, var5 + var4）其实换成compareAndSwapInt（obj, offset, expect, update）比较清楚，意思就是如果obj内的value和expect相等，就证明没有其他线程改变过这个变量，那么就更新它为update，如果这一步的CAS没有成功，那就采用自旋的方式继续进行CAS操作，取出乍一看这也是两个步骤了啊，其实在JNI里是借助于一个CPU指令完成的。所以还是原子操作.
 
 [并发编程之 CAS 的原理](https://juejin.im/post/5ae753d8f265da0ba56753ca)
-
-[Java并发编程：volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
 
 #### [cyclicbarrier和countdownlatch](https://cloud.tencent.com/developer/article/1120907)
 
@@ -231,11 +229,13 @@ CyclicBarrier （可循环使用的屏障）则与此不同，CyclicBarrier 允�
 * volatile不会造成线程的阻塞；synchronized可能会造成线程的阻塞。
 * volatile标记的变量不会被编译器优化；synchronized标记的变量可以被编译器优化。
 
+[volatile关键字解析](https://www.cnblogs.com/dolphin0520/p/3920373.html)
+
 #### [Blocking Queue](https://www.jianshu.com/p/b1408e3e3bb4)
 
 java.util.concurrent 包中的Java BlockingQueue 接口表示一个线程安全的队列。
 
-**操作方法：**
+**操作方法：**
 
 ||Throws Exception|特殊值|阻塞|超时|
 |--|--|--|--|--|
