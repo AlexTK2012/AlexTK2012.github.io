@@ -216,9 +216,21 @@ Java 锁种类: 悲观/乐观锁，公平/非公平锁，自旋锁/适应性自�
 * ReentrantLock和synchronized都是**可重入锁**。
   * 可重入锁又名递归锁，是指在同一个线程在外层方法获取锁的时候，再进入该线程的内层方法会自动获取锁（前提锁对象得是同一个对象或者class），避免死锁。
 
-[AbstractQueuedSynchronizer简介](https://ddnd.cn/2019/03/15/java-abstractqueuedsynchronizer/)
+***[ReentrantLock的实现原理](https://juejin.im/post/5c95df97e51d4551d06d8e8e#heading-13)***
 
-[ReentrantLock的实现原理](https://juejin.im/post/5c95df97e51d4551d06d8e8e#heading-13)
+ReentrantLock 底层使用 AQS 实现。
+
+***[AbstractQueuedSynchronizer简介](https://ddnd.cn/2019/03/15/java-abstractqueuedsynchronizer/)***
+
+AQS 可用于构建阻塞锁或者其他相关同步器的基础框，是Java并发包的基础工具类。通过AQS这个框架可以对同步状态原子性管理、线程的阻塞和解除阻塞、队列的管理进行统一管理。
+
+内部结构: 一个双向链表和一个单向链表.
+
+* 双链表为同步队列，队列中的每个节点对应一个Node内部类，AQS通过控制链表的节点而达到阻塞、同步的目的;
+* 单链表为条件队列，可以把同步队列和条件队列理解成储存等待状态的线程的队列;
+* 但是条件队列中的线程并不能直接去获取资源，而要先从条件队列转到同步队列中排队获取;
+* 同步队列的唤醒结果是线程去尝试获取锁，而条件队列的唤醒结果是把线程从条件队列移到同步队列中;
+* 一个线程要么是在同步队列中，要么是在条件队列中，不可能同时存在这两个队列里面。
 
 ***Monitor***
 

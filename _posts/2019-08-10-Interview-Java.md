@@ -30,6 +30,8 @@ tags:                                       # 标签，可多个
 * Java堆（Java Heap）
 * 方法区（Methed Area）
 
+[Java内存模型](https://juejin.im/post/59da10a76fb9a00a664a5e6e) 一般结合 JVM 内存结构、GC 思考回答。
+
 #### 编译型
 
 编译型的语言包括：C、C++、Delphi、Pascal、Fortran
@@ -73,6 +75,7 @@ java.lang包的八个类在java中称为包装类，包装类可用于实现多�
 
 ***[String、StringBuilder、StringBuffer实现原理](https://www.jianshu.com/p/64519f1b1137)***
 
+String 是final char[]; StringBuilder 可变数组; StringBuffer 用 synchronized 修饰方法。
 
 ## 抽象类和接口
 
@@ -181,7 +184,7 @@ System.gc(), finalize()
 #### 常见发生场景
 
 * 静态集合类HashMap、Vector 引起内存泄漏
-* 监听器
+* 监听器，释放对象的时候没有删除这些监听器
 * 各种连接：数据库、网络连接(socket)和io连接需要显示调用close()
 * 内部类和外部模块的引用
 * 单例模式
@@ -394,3 +397,5 @@ public class EagerSingleton {
 工厂方法模式是简单工厂的仅一步深化， 在工厂方法模式中，我们不再提供一个统一的工厂类来创建所有的对象，而是针对不同的对象提供不同的工厂。也就是说每个对象都有一个与之对应的工厂。
 
 定义：定义一个用于创建对象的接口，让子类决定将哪一个类实例化。工厂方法模式让一个类的实例化延迟到其子类。
+
+[工厂+反射](https://blog.csdn.net/QMW19910301/article/details/75640056)，可以对代码解耦

@@ -36,15 +36,7 @@ https://www.cnblogs.com/fanzhidongyzby/archive/2013/08/10/3250405.html)
 
 #### OSI七层协议
 
-||7层协议|
-|--|--|
-|应用层|HTTP、FTP、SMTP、POP3|
-|表示层|XDP|
-|会话层|BLS、TLS、RPC|
-|传输层|TCP、UDP|
-|网络层|IP|
-|数据链路层|网络|
-|物理层||
+![TCP-IP](/img/in-post/post-interview/Network-TCPIP.png)
 
 #### TCP/IP四层协议
 

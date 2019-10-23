@@ -56,3 +56,5 @@ AOP: 面向切面编程。（Aspect-Oriented Programming）
 ## Spring Security
 
 [认证流程](https://blog.csdn.net/u013435893/article/details/79605239)
+
+## [Rest](https://www.jianshu.com/p/350122cf63f2)
