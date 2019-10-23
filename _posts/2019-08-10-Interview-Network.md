@@ -138,6 +138,20 @@ session与cookie的区别
 （4）设置cookie时间可以使cookie过期。但是使用session-destory（），我们将会销毁会话。
 总结：如果我们需要经常登录一个站点时，最好用cookie来保存信息，要不然每次登陆都特别麻烦，如果对于需要安全性高的站点以及控制数据的能力时需要用会话效果更佳，当然我们也可以结合两者，使网站按照我们的想法进行运行
 
-## [Select、epoll、poll区别](https://www.jianshu.com/p/dfd940e7fca2)
+## 综合
 
-[参考](https://www.cnblogs.com/anker/p/3265058.html)
+当输入一个URL后：
+
+* 网络
+  * DNS，通过url 查询 IP地址;
+  * 通过UDP 打包发送 or 通过TCP 三次握手，打包，通过TLS 加密传输
+  * ARP 通过IP查询 MAC 地址;
+* 服务器端
+  * 负载均衡 Nginx
+  * 业务处理，Spring MVC、Spring Security 鉴权
+* 前后台Http 交互
+  * http报文，gzip压缩
+  * cookie 和 session
+  * 长连接、短连接
+* 前台
+  * 页面解析、css、html、渲染

@@ -25,6 +25,7 @@ tags:                                       # 标签，可多个
 * 重复注解，@Repeatable注解定义重复注解
 * 更好的类型推断
 * 拓宽注解的应用场景:注解几乎可以使用在任何元素上，局部变量、接口类型、超类、接口实现类、函数的异常定义。
+* Jdk1.6之后对 Synchronized 进行了性能优化，轻量级锁、偏向锁。
 
 #### Java官方库的新特性
 
@@ -187,21 +188,51 @@ java.util.concurrent 类库中提供了 Condition 类来实现线程之间的协
 
 Java 锁种类: 悲观/乐观锁，公平/非公平锁，自旋锁/适应性自旋锁，可重入/非可重入锁，排他/共享锁，无锁/偏向锁/轻量级锁/重量级锁。
 
-* java.util.concurrent包中的原子类就是通过CAS来实现了乐观锁;
-* synchronized 这种独占锁属于悲观锁;
-* 公平锁是指多个线程按照申请锁的顺序来获取锁，线程直接进入队列中排队，队列中的第一个线程才能获得锁。公平锁的优点是等待锁的线程不会饿死;
-* ReentrantReadWriteLock.ReadLock 是共享锁，WriteLock 是排他锁;
-* Synchronized 通过Monitor来实现线程同步，本质是每个对象都有个monitor，Monitor是依赖于底层的操作系统的Mutex Lock（互斥锁）来实现的线程同步。
+* java.util.concurrent包中的原子类就是通过CAS来实现了**乐观锁**, synchronized 这种独占锁属于**悲观锁**。
+* ReentrantReadWriteLock.ReadLock 是**共享锁**，WriteLock 是**排他锁**;
+* ReentrantLock默认使用**非公平锁**。
+  * ReentrantLock里面有一个内部类Sync，有**公平锁FairSync和非公平锁NonfairSync**两个子类。
+  * **公平锁**是指多个线程按照申请锁的顺序来获取锁，线程直接进入队列中排队，队列中的第一个线程才能获得锁。公平锁的优点是等待锁的线程不会饿死;
+* ReentrantLock和synchronized都是**可重入锁**。
+  * 可重入锁又名递归锁，是指在同一个线程在外层方法获取锁的时候，再进入该线程的内层方法会自动获取锁（前提锁对象得是同一个对象或者class），避免死锁。
 
 [AbstractQueuedSynchronizer简介](https://ddnd.cn/2019/03/15/java-abstractqueuedsynchronizer/)
 
 [ReentrantLock的实现原理](https://juejin.im/post/5c95df97e51d4551d06d8e8e#heading-13)
 
+***Monitor***
+
+* Monitor可以理解为一个同步工具或一种同步机制，通常被描述为一个对象。每一个Java对象就有一把看不见的锁，称为内部锁或者Monitor锁。
+* Monitor是线程私有的数据结构，每一个线程都有一个可用monitor record列表，同时还有一个全局的可用列表。每一个被锁住的对象都会和一个monitor关联，同时monitor中有一个Owner字段存放拥有该锁的线程的唯一标识，表示该锁被这个线程占用。
+* synchronized通过Monitor来实现线程同步，Monitor是依赖于底层的操作系统的Mutex Lock（互斥锁）来实现的线程同步。
+* 自旋锁里 “阻塞或唤醒Java线程需要操作系统切换CPU” , 这种基于Mutex Lock(互斥锁) 效率很低，成为“重量级锁”。Jdk 1.6 之后引入了 “偏向锁” 和 “轻量级锁”。
+
+**锁一共有4种状态**，级别从低到高依次是：无锁、偏向锁、轻量级锁和重量级锁。锁状态只能升级不能降级。
+
+无锁： 特点就是修改操作在循环内进行，线程会不断的尝试修改共享资源。比如 CAS。
+
+偏向锁： 指一段同步代码一直被一个线程所访问，那么该线程会自动获取锁，降低获取锁的代价。
+
+* 在线程进入和退出同步块时不再通过CAS操作来加锁和解锁，而是检测Mark Word里是否存储着指向当前线程的偏向锁。
+* 引入偏向锁是为了**在无多线程竞争的情况下**尽量减少不必要的轻量级锁执行路径，因为轻量级锁的获取及释放依赖多次CAS原子指令，而偏向锁只需要在置换ThreadID的时候依赖一次CAS原子指令即可。
+* 偏向锁通过对比Mark Word解决加锁问题，避免执行CAS操作。
+* 偏向锁在JDK 6及以后的JVM里是默认启用的。可以通过JVM参数关闭偏向锁：-XX:-UseBiasedLocking=false，关闭之后程序默认会进入轻量级锁状态.
+
+轻量级锁： 指当锁是偏向锁的时候，被另外的线程所访问，偏向锁就会升级为轻量级锁，其他线程会通过自旋的形式尝试获取锁，不会阻塞，从而提高性能。
+
+* 轻量级锁是通过用CAS操作和自旋来解决加锁问题，避免线程阻塞和唤醒而影响性能。
+
+重量级锁: 等待锁的线程都会进入阻塞状态.
+
 ##### 并发 CAS
 
-[CAS 原理剖析](https://juejin.im/post/5a73cbbff265da4e807783f5)
+Concurrent包中通过CAS 实现了乐观锁（通过无锁编程）。
 
-CompareAndSwapInt（var1, var2, var5, var5 + var4）其实换成compareAndSwapInt（obj, offset, expect, update）比较清楚，意思就是如果obj内的value和expect相等，就证明没有其他线程改变过这个变量，那么就更新它为update，如果这一步的CAS没有成功，那就采用自旋的方式继续进行CAS操作，取出乍一看这也是两个步骤了啊，其实在JNI里是借助于一个CPU指令完成的。所以还是原子操作.
+* AtomicInteger的自增函数incrementAndGet()的源码时，发现自增函数底层调用的是unsafe.getAndAddInt()，然后通过getIntVolatile() 获取v值。
+* CompareAndSwapInt（var1, var2, var5, var5 + var4）其实换成compareAndSwapInt（obj, offset, expect, update）比较清楚，意思就是如果obj内的value和expect相等，就证明没有其他线程改变过这个变量，那么就更新它为update，如果这一步的CAS没有成功，那就采用自旋的方式继续进行CAS操作，取出乍一看这也是两个步骤了啊，其实在JNI里是借助于一个CPU指令完成的。所以还是原子操作.
+* 这个自增操作的源码中的do-while循环就是一个自旋操作，如果修改数值失败则通过循环来执行自旋，直至修改成功。
+
+[CAS 原理剖析](https://juejin.im/post/5a73cbbff265da4e807783f5)
 
 [并发编程之 CAS 的原理](https://juejin.im/post/5ae753d8f265da0ba56753ca)
 

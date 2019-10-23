@@ -156,3 +156,7 @@ Unix 有五种 I/O 模型：
 
 * 与多进程和多线程技术相比，I/O多路复用技术的最大优势是系统开销小。
 * [epoll跟select都能提供多路I/O复用的解决方案](https://www.jianshu.com/p/dfd940e7fca2)
+
+#### [Select、epoll、poll区别](https://www.jianshu.com/p/dfd940e7fca2)
+
+[参考](https://www.cnblogs.com/anker/p/3265058.html)
