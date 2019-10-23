@@ -21,7 +21,7 @@ tags:                                       # 标签，可多个
 
 ## 正文
 
-很早就想搭建自己的github 主页了，看过嘉星的主页，终于开始动手了 T_T
+很早就想搭建自己的github 主页了，看过嘉星的主页，终于开始动手了 T_T
 过程确实挺简单的，fork 下 [Hux](https://github.com/Huxpro/huxpro.github.io) 大大的git主页，采取的是 [GitHub Pages](https://pages.github.com/) + [Jekyll](http://jekyllrb.com/) 快速 Building Blog 的技术方案。
 
 域名解析的部分可以参考[BY Blog](https://www.jianshu.com/p/e68fba58f75c) 配置下。
@@ -36,7 +36,7 @@ tags:                                       # 标签，可多个
 
 >注意：要用github pages的自己的引擎：bundle exec jekyll serve 。 因为github pages的使用jekyll与jekyll官方的在语法上有很大差别—— 这会导致用官方jekyll测试生效，推到github pages后却不会生效
 
-配置的过程中也没遇到什么坑，基本就是 Git 的流程。唯一麻烦的在于本地调试环境需要 `gem install jekyll`，而我的Mac上安装Jekyll，Zsh中不知为啥没有自动加环境变量，搞得本地调试很麻烦，手动加上就ok了。
+配置的过程中也没遇到什么坑，基本就是 Git 的流程。唯一麻烦的在于本地调试环境需要 `gem install jekyll`，而我的Mac上安装Jekyll，Zsh中不知为啥没有自动加环境变量，搞得本地调试很麻烦，手动加上就ok了。
 
 ---
 

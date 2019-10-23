@@ -108,7 +108,7 @@ new Thread(ft).start();
 * Java 不支持多重继承，因此继承了 Thread 类就无法继承其它类，但是可以实现多个接口；
 * 类可能只要求可执行就行，继承整个 Thread 类开销过大。
 
-***线程池 Executors类***
+#### 线程池 Executors
 
 Executor：提供了一系列工厂方法用于创建线程池，返回的线程池都实现了ExecutorService接口。
 
@@ -138,11 +138,31 @@ keepAliveTime：线程超时时间，看源码可知，该参数的意义是线�
 
 unit：超时时间的单位。
 
-workQueue：工作队列。
+workQueue：工作队列。 BlockingQueue是双缓冲队列。BlockingQueue内部使用两条队列，允许两个线程同时向队列一个存储，一个取出操作。在保证并发安全的同时，提高了队列的存取效率。
+
+* ArrayBlockingQueue（int i）:规定大小的BlockingQueue，其构造必须指定大小。其所含的对象是FIFO顺序排序的。
+* LinkedBlockingQueue（）或者（int i）:大小不固定的BlockingQueue，若其构造时指定大小，生成的BlockingQueue有大小限制，不指定大小，其大小有Integer.MAX_VALUE来决定。其所含的对象是FIFO顺序排序的。
+* PriorityBlockingQueue（）或者（int i）:类似于LinkedBlockingQueue，但是其所含对象的排序不是FIFO，而是依据对象的自然顺序或者构造函数的Comparator决定。
+* SynchronizedQueue（）:特殊的BlockingQueue，对其的操作必须是放和取交替完成。
 
 threadFactory：线程工厂，要实现ThreadFactory接口，线程池创建线程时会调用ThreadFactory的newThread方法创建线程。
 
 RejectedExecutionHandler：饱和策略。
+
+***[线程池与 WorkQueue 加载过程](https://blog.csdn.net/shixing_11/article/details/7109471)***
+
+1. 线程池刚创建时，里面没有一个线程。任务队列是作为参数传进来的。不过，就算队列里面有任务，线程池也不会马上执行它们。
+2. 当调用 execute() 方法添加一个任务时，线程池会做如下判断：
+    a. 如果正在运行的线程数量小于 corePoolSize，那么马上创建线程运行这个任务；
+    b. 如果正在运行的线程数量大于或等于 corePoolSize，那么将这个任务放入队列。
+    c. 如果这时候队列满了，而且正在运行的线程数量小于 maximumPoolSize，那么还是要创建(非核心)线程运行这个任务；
+    d. 如果队列满了，而且正在运行的线程数量大于或等于 maximumPoolSize，那么线程池会抛出异常，告诉调用者“我不能再接受任务了”。
+3. 当一个线程完成任务时，它会从队列中取下一个任务来执行。
+4. 当一个线程无事可做，超过一定的时间（keepAliveTime）时，线程池会判断，如果当前运行的线程数大于 corePoolSize，那么这个线程就被停掉。所以线程池的所有任务完成后，它最终会收缩到 corePoolSize 的大小。
+
+这个过程说明，并不是先加入任务就一定会先执行。假设队列大小为 4，corePoolSize为2，maximumPoolSize为6，那么当加入15个任务时，执行的顺序类似这样：首先执行任务 1、2，然后任务3~6被放入队列。这时候队列满了，任务7、8、9、10 会被马上执行，而任务 11~15 则会抛出异常。最终顺序是：1、2、7、8、9、10、3、4、5、6。
+
+当然这个过程是针对指定大小的ArrayBlockingQueue<Runnable>来说，如果是LinkedBlockingQueue<Runnable>，因为该队列无大小限制，所以不存在上述问题。
 
 #### 守护线程
 

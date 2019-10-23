@@ -103,7 +103,7 @@ CQL没有连接查询和子查询，因此select语句只适用于单个表。
     -- c4 是普通列
   ```
 
-  需要加上的场景:
+  需要加上的场景:
   - 缺少 partition key 的等值过滤条件.
     `select * from test where c2=2;`
   - 对普通列值过滤.

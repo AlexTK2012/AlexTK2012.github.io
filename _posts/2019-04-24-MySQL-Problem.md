@@ -13,13 +13,13 @@ tags:                                       # 标签，可多个
 
 查看 [MySQL 错误代码列表](https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-reference-error-sqlstates.html)
 
-## 访问远程被拒绝
+## 访问远程被拒绝
 
 场景复现: 新增的数据库，Navicat 远程无法登陆，但远程主机中可以正常使用。
 
 提示信息: `Error no. 1251: "Client does not support authentication..."`
 
-常见原因: 默认用户未配置远程访问
+常见原因: 默认用户未配置远程访问
 >已确认Linux 对应3306 端口防火墙已打开
 >/sbin/iptables -I INPUT -p tcp --dport 3306-j ACCEPT  #添加端口3306
 >/etc/rc.d/init.d/iptables save #保存设置

@@ -135,7 +135,7 @@ select * from area where rownum <= 8
 
 2）查询第2到第8条记录，三种：
 
-A: 先得到一个临时表有rownum列（一个伪列，类似rowid）,再在临时表中来查询。
+A: 先得到一个临时表有rownum列（一个伪列，类似rowid）,再在临时表中来查询。
 
 select id,province,city,district
 from (select id,province,city,district,rownum as num from area)
