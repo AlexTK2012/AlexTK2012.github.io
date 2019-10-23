@@ -95,18 +95,6 @@ Partiton：Task执行的结果就是生成了目标RDD的一个partition。
 * mapreduce只提供了map和reduce两种操作，spark 还有Streaming、GraphX；
 * spark框架生态更复杂。
 
-[MR的Shuffle机制](https://blog.csdn.net/ASN_forever/article/details/81233547)
-
-Shuffle阶段是指从Map的输出开始，包括系统执行排序以及传送Map输出到Reduce作为输入的过程。
-
-Sort阶段是指对Map端输出的Key进行排序的过程。不同的Map可能输出相同的Key，相同的Key必须发送到同一个Reduce端处理。
-
-Shuffle阶段可以分为Map端的Shuffle和Reduce端的Shuffle。
-
-Map 端Shuffle： 分区partition => 写入环形缓冲区 => 执行溢出写 => 归并merge
-
-Reduce 端Shuffle： 复制copy => 归并merge => reduce
-
 #### [运行流程](https://blog.csdn.net/xgjianstart/article/details/65441512)
 
 1. 构建Spark Application的运行环境（启动SparkContext），SparkContext向资源管理器（可以是Standalone、Mesos或YARN）注册并申请运行Executor资源；
@@ -164,20 +152,39 @@ RDD.repartition：给RDD重新设置partition的数量 [repartitions 或者 coal
 
 #### [Spark Shuffle](https://www.cnblogs.com/arachis/p/Spark_Shuffle.html)
 
-***[shuffle 过程](https://zhuanlan.zhihu.com/p/70331869)***
+[MR的Shuffle机制](https://blog.csdn.net/ASN_forever/article/details/81233547)
+
+Shuffle阶段是指从Map的输出开始，包括系统执行排序以及传送Map输出到Reduce作为输入的过程。
+
+Sort阶段是指对Map端输出的Key进行排序的过程。不同的Map可能输出相同的Key，相同的Key必须发送到同一个Reduce端处理。
+
+Shuffle阶段可以分为Map端的Shuffle和Reduce端的Shuffle。
+
+Map 端Shuffle： 分区partition => 写入环形缓冲区 => 执行溢出写 => 归并merge
+
+Reduce 端Shuffle： 复制copy => 归并merge => reduce
+
+***[Spark shuffle 过程](https://zhuanlan.zhihu.com/p/70331869)***
 
 Shuffle是连接map阶段和reduce阶段的桥梁。（宽依赖涉及shuffle操作）
 
 shuffle操作需要将数据进行重新聚合和划分，然后分配到集群的各个节点上进行下一个stage操作，这里会涉及集群不同节点间的大量数据交换。由于不同节点间的数据通过网络进行传输时需要先将数据写入磁盘，因此集群中每个节点均有大量的文件读写操作，从而导致shuffle操作十分耗时。
 
-Shuffle操作包含当前阶段的Shuffle Write（存盘）和下一阶段的Shuffle Read（fetch）,两种模式的主要差异是在Shuffle Write阶段
+以reduceByKey 为例：
+
+* Shuffle Write：上一个stage的每一个map task就必须保证将自己处理的当前分区中的数据相同的key写入一个分区文件中，可能会写入多个不同的分区文件中。
+* Shuffle Read：reduce task就会从上一个stage的所有task所在的机器上寻找属于自己的那些分区文件，这样就可以保证每一个key所对应的value都会汇聚在同一个节点上去处理和聚合。
 
 spark RDD中的shuffle算子：去重distinct()、聚合reduceByKey()、排序sortByKey()、重分区repartition()等
+
+***Spark中有两种Shuffle管理类型:***
 
 HashShuffle
 
 * 产生的磁盘小文件的个数：M（map task的个数）*R（reduce task的个数）
 * 优化后: C（core的个数）*R（reduce的个数）
+
+![Hash-Shuffle](/img/in-post/post-interview/Spark-HashShuffle.jpg)
 
 SortShuffle
 
@@ -185,6 +192,7 @@ SortShuffle
 * reduce task去map端拉取数据的时候，首先解析索引文件，根据索引文件再去拉取对应的数据
 * bypass机制
 
+![Sort-Shuffle](/img/in-post/post-interview/Spark-SortShuffle.png)
 
 #### 数据倾斜
 
@@ -209,6 +217,31 @@ SortShuffle
 
 参考：https://www.infoq.cn/article/the-road-of-spark-performance-tuning
 
+#### [Structured Streaming](https://zhuanlan.zhihu.com/p/51883927)
+
+基于 Spark SQL 的全新流计算引擎 Structured Streaming，让用户像编写批处理程序一样简单地编写高性能的流处理程序。
+
+Structured Streaming 则是在 Spark 2.0 加入的经过重新设计的全新流式引擎。一个流的数据源从逻辑上来说就是一个不断增长的动态表格，随着时间的推移，新数据被持续不断地添加到表格的末尾。用户可以使用 Dataset/DataFrame 或者 SQL 来对这个动态数据源进行实时查询。
+
+#### [Sprak Streaming 连接Kafka](https://juejin.im/post/5c997d9e5188252da22514e6)
+
+两种方式：
+
+基于Receiver方式, 使用High API, 对于所有的接收器，从kafka接收来的数据会存储在spark的executor中。
+
+* 在Receiver的方式中，Spark中的partition和kafka中的partition并不是相关的;
+* 对于不同的Group和topic我们可以使用多个Receiver创建不同的Dstream来并行接收数据，之后可以利用union来统一成一个Dstream;
+* offset 存在zookeeper 中，由于Spark Streaming消费的数据和Zookeeper中记录的offset不同步，这种方式偶尔会造成数据重复消费;
+* WAL机制可以保证数据零丢失的高可靠性，但是却无法保证数据被处理一次且仅一次，可能会处理两次。
+
+Direct 方式, 使用Low API, 直接消费Kafka Partition数据。
+
+* 其会周期性的获取Kafka中每个topic的每个partition中的最新offsets;
+* 之后根据设定的maxRatePerPartition来处理每个batch;
+* Kafka中的partition与RDD中的partition是一一对应的并行读取Kafka数据;
+* 高效：在Receiver的方式中，为了达到0数据丢失需要将数据存入Write Ahead Log中，这样在Kafka和日志中就保存了两份数据;
+* 使用Low API, Offsets 利用 Spark Streaming的checkpoints进行记录, 保证精确一次性。
+
 #### 实例
 
 Spark 离线优化，存在笛卡尔积
@@ -223,7 +256,7 @@ distinct 底层实现: reduceByKey
 
 #### Watermark
 
-当Flink中的运算符接收到水印时，它明白（假设）它不会看到比该时间戳更早的消息。
+当Flink中的运算符接收到水印时，它明白（假设）它不会看到比该时间戳更早的消息。watermark是用于处理乱序事件的，而正确的处理乱序事件，通常用watermark机制结合window来实现。
 
 ***Flink里的时间类型包括：***
 
@@ -274,7 +307,37 @@ class BoundedOutOfOrdernessGenerator extends AssignerWithPeriodicWatermarks[MyEv
 
 在多并行度的情况下，Windows总是以小的WaterMark时间为标准。
 
-#### [反压](http://wuchong.me/blog/2016/04/26/flink-internals-how-to-handle-backpressure/)
+#### Checkpoint机制
+
+***Spark Checkpoint：***
+
+* 在spark core中对RDD做checkpoint，可以切断做checkpoint RDD的依赖关系，将RDD数据保存到可靠存储（如HDFS）以便数据恢复；
+* 在spark streaming中，使用checkpoint用来保存DStreamGraph以及相关配置信息，以便在Driver崩溃重启的时候能够接着之前进度继续进行处理。
+* 核心方法是 `doCheckpoint()`
+
+Spark job 的提交执行是异步的，与 checkpoint 操作并不是原子操作。这样的机制会引起数据重复消费问题。
+
+***Flink Checkpoint***
+
+checkpoint 原理就是连续绘制分布式的快照，而且非常轻量级，可以连续绘制，并且不会对性能产生太大影响。默认情况下,checkpoint是关闭的。
+
+**[Chechpoint 执行流程：](https://www.jianshu.com/p/4d31d6cddc99)**
+
+1. CheckpointCoordinator周期性的向该流应用的所有source算子发送barrier。
+2. 当某个source算子收到一个barrier时，便暂停数据处理过程，然后将自己的当前状 态制作成快照，并保存到指定的持久化存储中，最后向CheckpointCoordinator报告 自己快照制作情况，同时向自身所有下游算子广播该barrier，恢复数据处理
+3. 下游算子收到barrier之后，会暂停自己的数据处理过程，然后将自身的相关状态制作成快照，并保存到指定的持久化存储中，最后向CheckpointCoordinator报告自身 快照情况，同时向自身所有下游算子广播该barrier，恢复数据处理。
+4. 每个算子按照步骤3不断制作快照并向下游广播，直到最后barrier传递到sink算子，快照制作完成。
+5. 当CheckpointCoordinator收到所有算子的报告之后，认为该周期的快照制作成功; 否则，如果在规定的时间内没有收到所有算子的报告，则认为本周期快照制作失败 ;
+
+[Flink的容错机制](https://cloud.tencent.com/developer/article/1189624) 的核心部分是制作分布式数据流和操作算子状态的一致性快照。 这些快照充当一致性checkpoint，系统可以在发生故障时回滚。
+
+* Flink分布式快照的核心概念之一是barriers。 这些barriers被注入数据流并与记录一起作为数据流的一部分向下流动。
+* barriers永远不会超过记录，数据流严格有序。
+
+[Barrier对齐:](https://blog.csdn.net/qq475781638/article/details/90737226)
+当一个opeator有多个输入流的时候，checkpoint barrier n 会进行对齐，就是已到达的会先缓存到buffer里等待其他未到达的，一旦所有流都到达，则会向下游广播，exactly-once 就是利用这一特性实现的，at least once 因为不会进行对齐，就会导致有的数据被重复处理。
+
+#### 反压
 
 反压：短时负载高峰导致系统接收数据的速率远高于它处理数据的速率。
 
@@ -284,7 +347,7 @@ class BoundedOutOfOrdernessGenerator extends AssignerWithPeriodicWatermarks[MyEv
 ***JStorm***
 认为直接停止 Spout 的发送太过暴力，因此通过逐级降速来进行反压的，效果会较 Storm 更为稳定，但算法也更复杂。另外 JStorm 没有引入 Zookeeper 而是通过 TopologyMaster 来协调拓扑进入反压状态，这降低了 Zookeeper 的负载。
 
-***[Spark](https://blog.51cto.com/14309075/2414995)***
+***[Spark 反压](https://blog.51cto.com/14309075/2414995)***
 需要反压的场景:
 
 1. 首次启动Streaming应用，kafka保留了大量未消费历史消息，并且auto.offset.reset=latest，可以防止第一个batch接收大量消息、处理时间过长和内存溢出
@@ -302,34 +365,17 @@ class BoundedOutOfOrdernessGenerator extends AssignerWithPeriodicWatermarks[MyEv
 * 若是基于Direct的数据源(如Kafka Direct Stream)，则可以通过设置spark.streaming.kafka.maxRatePerPartition来控制最大输入速率
 * 参考：https://zhuanlan.zhihu.com/p/45954932
 
-***Flink***
-没有使用任何复杂的机制来解决反压问题！它利用自身作为纯数据流引擎的优势来优雅地响应反压问题。
+***[Flink 反压](http://wuchong.me/blog/2016/04/26/flink-internals-how-to-handle-backpressure/)***
+
+没有使用任何复杂的机制来解决反压问题，它利用自身作为纯数据流引擎的优势来优雅地响应反压问题。
 
 Flink 在运行时主要由 operators 和 streams 两大组件构成。分布式阻塞队列 就是这些逻辑流，队列容量是通过缓冲池（LocalBufferPool）来实现的。
 
+Flink 中网络传输的内存管理:
+
+![Flink 中网络传输的内存管理](../img/in-post/post-interview/FLink-Network-BufferPool.png)
+
 Flink 中的数据传输相当于已经提供了应对反压的机制。因此，Flink 所能获得的最大吞吐量由其 pipeline 中最慢的组件决定。
-
-#### Checkpoint机制
-
-***Spark Checkpoint：***
-
-* 在spark core中对RDD做checkpoint，可以切断做checkpoint RDD的依赖关系，将RDD数据保存到可靠存储（如HDFS）以便数据恢复；
-* 在spark streaming中，使用checkpoint用来保存DStreamGraph以及相关配置信息，以便在Driver崩溃重启的时候能够接着之前进度继续进行处理。
-* 核心方法是 `doCheckpoint()`
-
-Spark job 的提交执行是异步的，与 checkpoint 操作并不是原子操作。这样的机制会引起数据重复消费问题。
-
-***[Flink Checkpoint:](https://www.jianshu.com/p/4d31d6cddc99)***
-
-checkpoint 原理就是连续绘制分布式的快照，而且非常轻量级，可以连续绘制，并且不会对性能产生太大影响。默认情况下,checkpoint是关闭的。
-
-[Flink的容错机制](https://cloud.tencent.com/developer/article/1189624) 的核心部分是制作分布式数据流和操作算子状态的一致性快照。 这些快照充当一致性checkpoint，系统可以在发生故障时回滚。
-
-* Flink分布式快照的核心概念之一是barriers。 这些barriers被注入数据流并与记录一起作为数据流的一部分向下流动。
-* barriers永远不会超过记录，数据流严格有序。
-
-[Barrier对齐:](https://blog.csdn.net/qq475781638/article/details/90737226)
-当一个opeator有多个输入流的时候，checkpoint barrier n 会进行对齐，就是已到达的会先缓存到buffer里等待其他未到达的，一旦所有流都到达，则会向下游广播，exactly-once 就是利用这一特性实现的，at least once 因为不会进行对齐，就会导致有的数据被重复处理。
 
 ## [Redis](https://github.com/CyC2018/CS-Notes/blob/master/notes/Redis.md)
 
@@ -536,7 +582,7 @@ Kafka通过配置request.required.acks属性来确认消息的生产：
 
 #### [高吞吐量](https://www.cnblogs.com/barrywxx/p/11544379.html)
 
-[参考](http://www.jasongj.com/kafka/high_throughput/)
+[Kafka高性能架构](http://www.jasongj.com/kafka/high_throughput/)
 
 ***顺序读写***
 
@@ -560,7 +606,7 @@ Linux内核sendfile系统调用，提供了零拷贝。Zero-Copy来请求kernel�
 
 #### [Replication](https://blog.csdn.net/lizhitao/article/details/52296102)
 
-[参考](https://blog.csdn.net/wingofeagle/article/details/60966001)
+[kafka容灾机制](https://blog.csdn.net/wingofeagle/article/details/60966001)
 
 Kafka的消息安全性与容灾机制主要是通过副本replication的设置和leader／follower的的机制实现的。
 
