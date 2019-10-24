@@ -638,19 +638,23 @@ Kafka在Zookeeper中动态维护了一个ISR（in-sync replicas） set，这个s
 
 MirrorMaker 工具：Kafka 官方提供的跨数据中心的流数据同步方案。其实现原理，其实就是通过从Source Cluster消费消息然后将消息生产到Target Cluster，即普通的消息生产和消费。用户只要通过简单的consumer配置和producer配置，然后启动Mirror，就可以实现准实时的数据同步。
 
+[Kafka最终一致性](https://blog.csdn.net/lizhitao/article/details/52296102)
+
 #### 消息中间件
 
 [Kafka、RabbitMQ等](https://blog.csdn.net/u013256816/article/details/79838428)
 
 ## 容灾
 
-[腾讯云高可用和容灾解决方案](https://cloud.tencent.com/developer/article/1058500)
+***[异地多活架构](http://matianchi.com/2018/09/19/%E5%BC%82%E5%9C%B0%E5%A4%9A%E6%B4%BB%E6%9E%B6%E6%9E%84/)***
 
-[云化数据中心容灾](https://cloud.tencent.com/developer/article/1484621)
+[腾讯云高可用和容灾解决方案](https://cloud.tencent.com/developer/article/1058500)
 
 [同城双机房架构剖析](https://yq.aliyun.com/articles/74424)
 
-[“异地多活” 设计](https://juejin.im/entry/57ec7e43bf22ec00643d5b6a)
+[金融级分布式交易系统](https://zhuanlan.zhihu.com/p/52585477)
+
+[云化数据中心容灾](https://cloud.tencent.com/developer/article/1484621)
 
 [饿了么异地多活技术实现](https://zhuanlan.zhihu.com/p/34958596)
 
@@ -660,6 +664,10 @@ MirrorMaker 工具：Kafka 官方提供的跨数据中心的流数据同步方�
 
 [分布式锁的几种使用方式（redis、zookeeper、数据库)](https://blog.csdn.net/u010963948/article/details/79006572)
 
-***[分布式数据一致性](https://cloud.tencent.com/developer/article/1041507)***
+***[保证分布式数据一致性](https://cloud.tencent.com/developer/article/1041507)***
+
+[分布式事务与最终一致性](https://zhuanlan.zhihu.com/p/25933039)
+
+## 海量数据
 
 [海量数据处理](https://blog.csdn.net/v_JULY_v/article/details/6279498) 基本都是分治的思想。
