@@ -373,7 +373,7 @@ Flink 在运行时主要由 operators 和 streams 两大组件构成。分布式
 
 Flink 中网络传输的内存管理:
 
-![Flink 中网络传输的内存管理](../img/in-post/post-interview/FLink-Network-BufferPool.png)
+![Flink 中网络传输的内存管理](/img/in-post/post-interview/FLink-Network-BufferPool.png)
 
 Flink 中的数据传输相当于已经提供了应对反压的机制。因此，Flink 所能获得的最大吞吐量由其 pipeline 中最慢的组件决定。
 
