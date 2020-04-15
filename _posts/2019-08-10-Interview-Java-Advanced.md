@@ -37,6 +37,18 @@ tags:                                       # 标签，可多个
 * 并行数组
 * 并发性: 为java.util.concurrent.ConcurrentHashMap类添加了新的方法来支持聚焦操作
 
+#### DateTimeFormatter
+
+* java8之前，时间格式化主要是使用 SimpleDateFormat，是非线程安全的。
+    * SimpleDateFormat之所以是线程不安全的就是因为Calendar是线程不安全的，后者之所以是线程不安全的是因为其中存放日期数据的变量都是线程不安全的
+* java8中，主要是使用 **DateTimeFormatter**, 是线程安全的。
+
+[实例参考](https://www.liaoxuefeng.com/wiki/1252599548343744/1303985694703650)
+
+[Java8处理日期和时间示例](https://www.jianshu.com/p/2949db9c3df5)
+
+[字符串和Long时间戳互转](https://blog.csdn.net/u012843361/article/details/80496272)
+
 ## [Java 多线程](https://github.com/CyC2018/CS-Notes/blob/master/notes/Java%20并发.md)
 
 #### 线程状态
