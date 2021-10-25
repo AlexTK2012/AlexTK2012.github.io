@@ -252,6 +252,7 @@ Java 集合框架主要包括两种类型的容器，一种是集合（Collectio
 
 * Hashtable: 继承Map接口，实现一个key-value映射的哈希表。任何非空（non-null）的对象都可作为key或者value，HashTable是同步的。
 * HashMap: 不能保证元素的顺序一样，HashMap是非同步的，并且允许null，即null value和null key
+  * HashMap是无序的，这里的无序是指输出的顺序和put进去的顺序不一样，这叫无序
   * LinkedHashMap也使用双向链表来维护key-value对的次序
   * 容量(Capacity)，即HashMap中数组的大小; 
   * 负载因子(load factor) = 实际键值对个数 / hashmap中数组的大小
